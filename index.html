@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Hub - Colección Personal</title>
+    <!-- Link to CSS -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <!-- Main header -->
+    <header class="main-header">
+      <div class="logo">
+        <h1>Game Hub</h1>
+      </div>
+
+      <!-- Search bar -->
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search games..." />
+      </div>
+
+      <!-- Controles rápidos (Tema)
+      <div class="header-actions">
+        <button id="theme-toggle" class="btn-secondary">🌙 Modo Oscuro</button>
+      </div> -->
+    </header>
+
+    <!-- Main content (sidebar + grid) -->
+    <div class="layout-container">
+      <!-- Siderbar content (Filters)-->
+      <aside class="sidebar">
+        <h3>Filters</h3>
+
+        <div class="filter-group">
+          <h4>Platforms</h4>
+          <button class="filter-btn active" data-platform="all">All</button>
+          <button class="filter-btn" data-platform="pc">PC</button>
+          <button class="filter-btn" data-platform="switch">
+            Nintendo Switch
+          </button>
+          <button class="filter-btn" data-platform="playstation">
+            PlayStation
+          </button>
+          <button class="filter-btn" data-platform="xbox-series-x-s">
+            Xbox Series X/S
+          </button>
+        </div>
+
+        <div class="filter-group">
+          <h4>State</h4>
+          <button class="filter-btn active" data-state="all">All</button>
+          <button class="filter-btn" data-state="owned">Owned</button>
+          <button class="filter-btn" data-state="wishlist">Wishlist</button>
+        </div>
+      </aside>
+
+      <!-- Grid content (Gallery Games)-->
+      <main class="content-area">
+        <div class="content-header">
+          <h2>My Game Collection <span id="game-count">0</span></h2>
+        </div>
+
+        <section id="games-grid" class="games-grid">
+          <!-- Game cards will be dynamically inserted here -->
+        </section>
+      </main>
+    </div>
+
+    <!-- Link to JavaScript -->
+    <script src="app.js"></script>
+  </body>
+</html>

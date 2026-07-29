@@ -1,0 +1,161 @@
+/* Global variables */
+root {
+  --bg-primary: #0f172a; /* Fondo principal (Oscuro) */
+  --bg-secondary: #1e293b; /* Fondo de tarjetas y sidebar */
+  --text-main: #f8fafc; /* Color de texto principal */
+  --text-muted: #94a3b8; /* Texto secundario / gris */
+  --accent-color: #6366f1; /* Color de acento (Púrpura/Azul) */
+  --border-color: #334155; /* Borde discreto */
+}
+
+/* Remove browser margin and padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+}
+
+/* Styles for the header */
+.main-header {
+  display: flex;
+  justify-content: space-between; /* Distribuye el espacio entre los 3 elementos */
+  align-items: center; /* Centra verticalmente los elementos */
+  padding: 1rem 2rem; /* Relleno arriba/abajo y a los lados */
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.logo h1 {
+  font-size: 1.5rem;
+  color: var(--accent-color);
+}
+
+/* Search bar input */
+.search-bar input {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  width: 250px;
+  outline: none;
+}
+
+.search-bar input:focus {
+  border-color: var(--accent-color); /* Se ilumina al hacer clic */
+}
+
+/* Estructura principal de 2 columnas */
+.layout-container {
+  display: grid;
+  grid-template-columns: 240px 1fr; /* Columna izquierda fija, derecha flexible */
+  min-height: calc(
+    100vh - 70px
+  ); /* Ocupa el resto de la altura de la pantalla */
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-right: 1px solid var(--border-color);
+}
+
+.filter-group {
+  margin-top: 1.5rem;
+}
+
+.filter-group h4 {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+/* Botones de filtro */
+.filter-btn {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.4rem;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-main);
+  text-align: left;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background-color: var(--bg-primary);
+  border-color: var(--border-color);
+  color: var(--accent-color);
+}
+
+/* Área del contenido principal */
+.content-area {
+  padding: 2rem;
+}
+
+/* Contenedor de la rejilla de juegos */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem; /* Espacio entre cada tarjeta */
+  margin-top: 1.5rem;
+}
+
+/* Estilo provisional de las tarjetas de juego */
+.game-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden; /* Evita que la imagen se salga por las esquinas redondeadas */
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.game-card:hover {
+  transform: translateY(-4px); /* Efecto de elevación al pasar el ratón */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.game-card img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover; /* Mantiene la proporción de la imagen sin deformarla */
+}
+
+.game-info {
+  padding: 1rem;
+}
+
+.game-info h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.game-tags {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tag {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background-color: var(--bg-primary);
+  color: var(--text-muted);
+}
