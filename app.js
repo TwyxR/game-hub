@@ -160,20 +160,32 @@ filterButtons.forEach((button) => {
   });
 });
 
-// 8. Funcionalidad de Modo Oscuro / Claro
+// 8. Funcionalidad de Modo Oscuro / Claro con LocalStorage
 const themeToggleBtn = document.getElementById("theme-toggle");
 
-themeToggleBtn.addEventListener("click", () => {
-  // Leemos el tema actual del elemento <html>
-  const currentTheme = document.documentElement.getAttribute("data-theme");
+// A) Al cargar la página: Comprobar si había un tema guardado previa
+const savedTheme = localStorage.getItem("theme");
 
-  if (currentTheme === "light") {
-    // Si está en claro, cambiamos a oscuro
-    document.documentElement.removeAttribute("data-theme");
-    themeToggleBtn.textContent = "🌙 Modo Oscuro";
-  } else {
-    // Si está en oscuro (por defecto), cambiamos a claro
-    document.documentElement.setAttribute("data-theme", "light");
-    themeToggleBtn.textContent = "☀️ Modo Claro";
-  }
-});
+if (savedTheme === "light") {
+  document.documentElement.setAttribute("data-theme", "light");
+  if (themeToggleBtn) themeToggleBtn.textContent = "☀️ Modo Claro";
+}
+
+// B) Al hacer clic en el botón: Cambiar el tema y guardar la preferencia
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener("click", () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+
+    if (currentTheme === "light") {
+      // Cambiamos a Oscuro (tema por defecto)
+      document.documentElement.removeAttribute("data-theme");
+      themeToggleBtn.textContent = "🌙 Modo Oscuro";
+      localStorage.setItem("theme", "dark"); // <--- Guardamos preferencia
+    } else {
+      // Cambiamos a Claro
+      document.documentElement.setAttribute("data-theme", "light");
+      themeToggleBtn.textContent = "☀️ Modo Claro";
+      localStorage.setItem("theme", "light"); // <--- Guardamos preferencia
+    }
+  });
+}
