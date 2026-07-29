@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Game Hub - Colección Personal</title>
+    <!-- FontAwesome Icons CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
     <!-- Link to CSS -->
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -20,10 +25,14 @@
         <input type="text" id="search-input" placeholder="Search games..." />
       </div>
 
-      <!-- Controles rápidos (Tema) -->
-      <div class="header-actions">
-        <button id="theme-toggle" class="btn-theme">🌙 Modo Oscuro</button>
-      </div>
+      <!-- Theme Toggle Switch -->
+      <label class="theme-switch" for="theme-toggle-input">
+        <input type="checkbox" id="theme-toggle-input" />
+        <span class="slider round">
+          <i class="fas fa-sun icon-sun"></i>
+          <i class="fas fa-moon icon-moon"></i>
+        </span>
+      </label>
     </header>
 
     <!-- Main content (sidebar + grid) -->
