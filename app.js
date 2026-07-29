@@ -1,155 +1,166 @@
-// 1. Array de datos (simula la respuesta de una base de datos o API)
-const games = [
+// 1. Datos del catálogo inicial (Tipo tienda/biblioteca)
+const initialGames = [
   {
-    id: 1,
+    id: "dos2",
     title: "Divinity: Original Sin 2",
-    platform: "pc",
-    status: "completed",
+    platforms: ["PC"],
     genre: "RPG",
-    image:
-      "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop",
+    cover:
+      "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80",
   },
   {
-    id: 2,
+    id: "elden",
     title: "Elden Ring",
-    platform: "pc",
-    status: "playing",
+    platforms: ["PC", "PlayStation", "Xbox Series X/S"],
     genre: "Acción / RPG",
-    image:
-      "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?q=80&w=600&auto=format&fit=crop",
+    cover:
+      "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=400&q=80",
   },
   {
-    id: 3,
+    id: "totk",
     title: "The Legend of Zelda: Tears of the Kingdom",
-    platform: "switch",
-    status: "completed",
+    platforms: ["Nintendo Switch"],
     genre: "Aventura",
-    image:
-      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop",
+    cover:
+      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80",
   },
   {
-    id: 4,
+    id: "gowr",
     title: "God of War Ragnarök",
-    platform: "playstation",
-    status: "backlog",
+    platforms: ["PlayStation", "PC"],
     genre: "Acción",
-    image:
-      "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=600&auto=format&fit=crop",
+    cover:
+      "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=400&q=80",
   },
 ];
 
-// 2. Selección de elementos del DOM
+// 2. Funciones para leer y guardar en localStorage (Tienen que estar fuera)
+function getUserStatuses() {
+  const saved = localStorage.getItem("user_game_statuses");
+  return saved ? JSON.parse(saved) : {};
+}
+
+function setGameStatus(gameId, newStatus) {
+  const statuses = getUserStatuses();
+  if (newStatus === "none") {
+    delete statuses[gameId];
+  } else {
+    statuses[gameId] = newStatus;
+  }
+  localStorage.setItem("user_game_statuses", JSON.stringify(statuses));
+}
+
+// 3. Selección de elementos del DOM
 const gamesGrid = document.getElementById("games-grid");
 const gameCountLabel = document.getElementById("game-count");
 
-// 3. Función para renderizar el catálogo en la pantalla
+// 4. Función para renderizar el catálogo en la pantalla
 function renderGames(gamesList) {
-  // Limpiamos el contenedor por si había contenido previo
-  gamesGrid.innerHTML = "";
+  // Buscamos por ID 'games-grid' o 'games-container' para asegurar compatibilidad con tu HTML
+  const container = document.getElementById("games-grid") || document.getElementById("games-container");
+  if (!container) return;
 
-  // Actualizamos el contador de juegos mostrados
-  gameCountLabel.textContent = gamesList.length;
+  const userStatuses = getUserStatuses();
+  container.innerHTML = "";
 
-  // Si la lista está vacía, mostramos un mensaje
-  if (gamesList.length === 0) {
-    gamesGrid.innerHTML =
-      "<p class='no-results'>No se encontraron juegos con esos filtros.</p>";
-    return;
-  }
+  gamesList.forEach(game => {
+    const currentStatus = userStatuses[game.id] || "none";
 
-  // Recorremos la lista de juegos con .forEach
-  gamesList.forEach((game) => {
-    // Creamos un elemento article para cada tarjeta
-    const card = document.createElement("article");
+    const card = document.createElement("div");
     card.classList.add("game-card");
 
-    // Formateamos el texto del estado para que quede bonito visualmente
-    const statusText = {
-      playing: "Jugando",
-      completed: "Completado",
-      backlog: "Pendiente",
-    }[game.status];
-
-    // Inyectamos el HTML de la tarjeta
     card.innerHTML = `
-      <img src="${game.image}" alt="Portada de ${game.title}">
+      <img src="${game.cover}" alt="${game.title}" class="game-cover">
       <div class="game-info">
         <h3>${game.title}</h3>
-        <div class="game-tags">
-          <span class="tag">${game.platform.toUpperCase()}</span>
-          <span class="tag">${game.genre}</span>
-        </div>
-        <div style="margin-top: 0.8rem; font-size: 0.85rem; color: var(--accent-color);">
-          <strong>Estado:</strong> ${statusText}
+        <p class="game-meta">${game.platforms.join(" • ")} | ${game.genre}</p>
+        
+        <div class="status-selector-wrapper">
+          <label for="status-${game.id}">Estado:</label>
+          <select id="status-${game.id}" class="status-select" data-id="${game.id}">
+            <option value="none" ${currentStatus === "none" ? "selected" : ""}>➕ Sin añadir</option>
+            <option value="pending" ${currentStatus === "pending" ? "selected" : ""}>⏳ Pendiente</option>
+            <option value="playing" ${currentStatus === "playing" ? "selected" : ""}>🎮 Jugando</option>
+            <option value="completed" ${currentStatus === "completed" ? "selected" : ""}>🏆 Completado</option>
+          </select>
         </div>
       </div>
     `;
 
-    // Añadimos la tarjeta dentro de la rejilla
-    gamesGrid.appendChild(card);
+    container.appendChild(card);
   });
+
+  // Escuchar cuando el usuario cambie la opción del desplegable
+  document.querySelectorAll(".status-select").forEach(select => {
+    select.addEventListener("change", (e) => {
+      const gameId = e.target.getAttribute("data-id");
+      const newStatus = e.target.value;
+      setGameStatus(gameId, newStatus);
+    });
+  });
+
+  // Actualizar el contador si existe el elemento
+  if (gameCountLabel) {
+    gameCountLabel.textContent = gamesList.length;
+  }
 }
 
-// Ejecutamos la función por primera vez con toda la lista
-renderGames(games);
-
-// 4. Variables de estado para los filtros activos
+// 5. Variables de estado para los filtros activos
 let currentSearch = "";
 let currentPlatform = "all";
 let currentStatus = "all";
 
-// 5. Función que aplica todos los filtros combinados
+// 6. Función que aplica todos los filtros combinados
 function filterGames() {
-  const filtered = games.filter((game) => {
-    // Coincidencia por texto de búsqueda (convertido a minúsculas)
+  const userStatuses = getUserStatuses();
+
+  const filtered = initialGames.filter((game) => {
+    // A) Filtro por Búsqueda de texto
     const matchesSearch = game.title
       .toLowerCase()
       .includes(currentSearch.toLowerCase());
 
-    // Coincidencia por plataforma
+    // B) Filtro por Plataforma (comprueba si el array de plataformas del juego incluye la seleccionada)
     const matchesPlatform =
-      currentPlatform === "all" || game.platform === currentPlatform;
+      currentPlatform === "all" || game.platforms.includes(currentPlatform);
 
-    // Coincidencia por estado
+    // C) Filtro por Estado (lee de localStorage)
+    const gameStatus = userStatuses[game.id] || "none";
     const matchesStatus =
-      currentStatus === "all" || game.status === currentStatus;
+      currentStatus === "all" || gameStatus === currentStatus;
 
-    // Solo pasa si cumple las 3 condiciones a la vez
     return matchesSearch && matchesPlatform && matchesStatus;
   });
 
-  // Volvemos a renderizar las tarjetas con la lista filtrada
   renderGames(filtered);
 }
 
-// 6. Escuchador para la barra de búsqueda
+// 7. Escuchador para la barra de búsqueda
 const searchInput = document.getElementById("search-input");
-searchInput.addEventListener("input", (e) => {
-  currentSearch = e.target.value;
-  filterGames(); // Filtramos cada vez que el usuario escribe una letra
-});
+if (searchInput) {
+  searchInput.addEventListener("input", (e) => {
+    currentSearch = e.target.value;
+    filterGames();
+  });
+}
 
-// 7. Escuchadores para los botones de la barra lateral (Sidebar)
+// 8. Escuchadores para los botones de la barra lateral (Sidebar)
 const filterButtons = document.querySelectorAll(".filter-btn");
 
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    // Si el botón pertenece al grupo de Plataformas
     if (button.dataset.platform) {
       currentPlatform = button.dataset.platform;
 
-      // Actualizamos la clase 'active' en el grupo de plataforma
       document
         .querySelectorAll("[data-platform]")
         .forEach((btn) => btn.classList.remove("active"));
       button.classList.add("active");
     }
 
-    // Si el botón pertenece al grupo de Estados
     if (button.dataset.status) {
       currentStatus = button.dataset.status;
 
-      // Actualizamos la clase 'active' en el grupo de estado
       document
         .querySelectorAll("[data-status]")
         .forEach((btn) => btn.classList.remove("active"));
@@ -160,10 +171,8 @@ filterButtons.forEach((button) => {
   });
 });
 
-// 8. Funcionalidad de Modo Oscuro / Claro con LocalStorage
+// 9. Funcionalidad de Modo Oscuro / Claro con LocalStorage
 const themeToggleBtn = document.getElementById("theme-toggle");
-
-// A) Al cargar la página: Comprobar si había un tema guardado previa
 const savedTheme = localStorage.getItem("theme");
 
 if (savedTheme === "light") {
@@ -171,21 +180,21 @@ if (savedTheme === "light") {
   if (themeToggleBtn) themeToggleBtn.textContent = "☀️ Modo Claro";
 }
 
-// B) Al hacer clic en el botón: Cambiar el tema y guardar la preferencia
 if (themeToggleBtn) {
   themeToggleBtn.addEventListener("click", () => {
     const currentTheme = document.documentElement.getAttribute("data-theme");
 
     if (currentTheme === "light") {
-      // Cambiamos a Oscuro (tema por defecto)
       document.documentElement.removeAttribute("data-theme");
       themeToggleBtn.textContent = "🌙 Modo Oscuro";
-      localStorage.setItem("theme", "dark"); // <--- Guardamos preferencia
+      localStorage.setItem("theme", "dark");
     } else {
-      // Cambiamos a Claro
       document.documentElement.setAttribute("data-theme", "light");
       themeToggleBtn.textContent = "☀️ Modo Claro";
-      localStorage.setItem("theme", "light"); // <--- Guardamos preferencia
+      localStorage.setItem("theme", "light");
     }
   });
 }
+
+// 10. Renderizado Inicial
+renderGames(initialGames);
