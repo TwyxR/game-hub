@@ -1,11 +1,21 @@
 /* Global variables */
-root {
+:root {
   --bg-primary: #0f172a; /* Fondo principal (Oscuro) */
   --bg-secondary: #1e293b; /* Fondo de tarjetas y sidebar */
   --text-main: #f8fafc; /* Color de texto principal */
   --text-muted: #94a3b8; /* Texto secundario / gris */
   --accent-color: #6366f1; /* Color de acento (Púrpura/Azul) */
   --border-color: #334155; /* Borde discreto */
+}
+
+/* Tema Claro (Light Mode) */
+[data-theme="light"] {
+  --bg-primary: #f4f6f9;
+  --bg-secondary: #ffffff;
+  --border-color: #e2e8f0;
+  --text-main: #1a202c;
+  --text-muted: #718096;
+  --accent-color: #6366f1; /* Mantenemos o ajustamos el color de acento */
 }
 
 /* Remove browser margin and padding */

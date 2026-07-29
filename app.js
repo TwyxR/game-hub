@@ -159,3 +159,21 @@ filterButtons.forEach((button) => {
     filterGames();
   });
 });
+
+// 8. Funcionalidad de Modo Oscuro / Claro
+const themeToggleBtn = document.getElementById("theme-toggle");
+
+themeToggleBtn.addEventListener("click", () => {
+  // Leemos el tema actual del elemento <html>
+  const currentTheme = document.documentElement.getAttribute("data-theme");
+
+  if (currentTheme === "light") {
+    // Si está en claro, cambiamos a oscuro
+    document.documentElement.removeAttribute("data-theme");
+    themeToggleBtn.textContent = "🌙 Modo Oscuro";
+  } else {
+    // Si está en oscuro (por defecto), cambiamos a claro
+    document.documentElement.setAttribute("data-theme", "light");
+    themeToggleBtn.textContent = "☀️ Modo Claro";
+  }
+});
