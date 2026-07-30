@@ -213,20 +213,17 @@ let currentPlatform = "all";
 let currentStatus = "all";
 
 function filterGames() {
-  const userStatuses = getUserStatuses();
+  // Read active platform filter button
+  const activePlatformBtn = document.querySelector(".filter-btn[data-platform].active");
+  const selectedPlatform = activePlatformBtn ? activePlatformBtn.getAttribute("data-platform") : "all";
 
   const filtered = fetchedGames.filter(game => {
-    // Search query match
-    const matchesSearch = game.title.toLowerCase().includes(currentSearch.toLowerCase());
+    // Platform Filter Check
+    const matchesPlatform = selectedPlatform === "all" || game.platforms.some(p => 
+      p.toLowerCase().includes(selectedPlatform.toLowerCase())
+    );
 
-    // Platform icon matching
-    const matchesPlatform = currentPlatform === "all" || game.platforms.some(p => p.toLowerCase().includes(currentPlatform.toLowerCase()));
-
-    // Library status matching
-    const gameStatus = userStatuses[game.id] || "none";
-    const matchesStatus = currentStatus === "all" || gameStatus === currentStatus;
-
-    return matchesSearch && matchesPlatform && matchesStatus;
+    return matchesPlatform;
   });
 
   renderGames(filtered);
@@ -286,3 +283,21 @@ if (themeToggleInput) {
 document.addEventListener("DOMContentLoaded", () => {
   loadCatalog();
 });
+
+// Toggle 'See More' Platforms Dropdown
+const togglePlatformsBtn = document.getElementById("toggle-platforms-btn");
+const morePlatformsContainer = document.getElementById("more-platforms");
+
+if (togglePlatformsBtn && morePlatformsContainer) {
+  togglePlatformsBtn.addEventListener("click", () => {
+    morePlatformsContainer.classList.toggle("hidden");
+    togglePlatformsBtn.classList.toggle("open");
+
+    const isExpanded = !morePlatformsContainer.classList.contains("hidden");
+    const btnText = togglePlatformsBtn.querySelector("span");
+    
+    if (btnText) {
+      btnText.textContent = isExpanded ? "See less" : "See more";
+    }
+  });
+}

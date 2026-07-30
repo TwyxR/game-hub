@@ -42,19 +42,31 @@
         <h3>Filters</h3>
 
         <div class="filter-group">
-          <h4>Platforms</h4>
-          <button class="filter-btn active" data-platform="all">All</button>
-          <button class="filter-btn" data-platform="pc">PC</button>
-          <button class="filter-btn" data-platform="switch">
-            Nintendo Switch
-          </button>
-          <button class="filter-btn" data-platform="playstation">
-            PlayStation
-          </button>
-          <button class="filter-btn" data-platform="xbox-series-x-s">
-            Xbox Series X/S
-          </button>
-        </div>
+        <h4>Platforms</h4>
+  
+        <!-- Platforms Always Visible -->
+        <button class="filter-btn active" data-platform="all">All Platforms</button>
+        <button class="filter-btn" data-platform="pc"><i class="fas fa-desktop"></i> PC</button>
+        <button class="filter-btn" data-platform="playstation"><i class="fab fa-playstation"></i> PlayStation</button>
+        <button class="filter-btn" data-platform="xbox"><i class="fab fa-xbox"></i> Xbox</button>
+        <button class="filter-btn" data-platform="nintendo"><i class="fas fa-gamepad"></i> Nintendo</button>
+  
+        <!-- Extended Platforms Container (Hidden by Default) -->
+        <div id="more-platforms" class="extra-platforms hidden">
+        <button class="filter-btn" data-platform="ios"><i class="fab fa-apple"></i> iOS</button>
+        <button class="filter-btn" data-platform="android"><i class="fab fa-android"></i> Android</button>
+        <button class="filter-btn" data-platform="apple macintosh"><i class="fab fa-apple"></i> macOS</button>
+        <button class="filter-btn" data-platform="linux"><i class="fab fa-linux"></i> Linux</button>
+        <button class="filter-btn" data-platform="sega"><i class="fas fa-ghost"></i> SEGA</button>
+        <button class="filter-btn" data-platform="atari"><i class="fas fa-gamepad"></i> Atari</button>
+        <button class="filter-btn" data-platform="web"><i class="fas fa-globe"></i> Web</button>
+    </div>
+
+  <!-- Show More Toggle Button -->
+  <button id="toggle-platforms-btn" class="show-more-btn">
+    <span>See more</span> <i class="fas fa-chevron-down"></i>
+  </button>
+</div>
 
         <div class="filter-group">
           <h4>State</h4>

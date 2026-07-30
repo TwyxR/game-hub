@@ -309,3 +309,46 @@ input:checked + .slider {
 input:checked + .slider:before {
   transform: translateX(28px);
 }
+
+/* Extra Platforms Collapsible Area */
+.extra-platforms {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.extra-platforms.hidden {
+  display: none;
+}
+
+/* See More / Show Less Button */
+.show-more-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  margin-top: 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--accent-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.show-more-btn:hover {
+  opacity: 0.8;
+}
+
+.show-more-btn i {
+  font-size: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+.show-more-btn.open i {
+  transform: rotate(180deg); /* Flips arrow up when expanded */
+}
