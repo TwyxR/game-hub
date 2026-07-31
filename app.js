@@ -1,254 +1,55 @@
-// ==========================================
-// 1. CONFIGURATION & MOCK FALLBACK DATA
-// ==========================================
+/* ==========================================
+   1. CONFIGURATION & GLOBAL STATE
+   ========================================== */
 
+// API Configuration (Used inside the Search Modal)
 const API_KEY = "f97d3b0cfd9845a4ba7d4ec1765f6527";
-const API_URL = `https://api.rawg.io/api/games?key=${API_KEY}&page_size=20`;
+const API_URL = `https://api.rawg.io/api/games?key=${API_KEY}`;
 
-// Global state to hold catalog games
-let fetchedGames = [];
+// LocalStorage Persistence Key
+const STORAGE_KEY = "my_game_collection";
 
-// Combined filter state variables
-let currentSearch = "";
+// Load user collection from localStorage or start empty
+let myCollection = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+// Global Filter States
 let currentPlatform = "all";
 let currentStatus = "all";
-
-// Local dataset used as a fallback if the external API fails
-const FALLBACK_GAMES = [
-  {
-    id: "3498",
-    title: "Grand Theft Auto V",
-    platforms: ["PlayStation", "Xbox", "PC"],
-    genre: "Action",
-    cover:
-      "https://media.rawg.io/media/games/20a/20aa03a10e53b5677a2d963004a30e20.jpg",
-  },
-  {
-    id: "3328",
-    title: "The Witcher 3: Wild Hunt",
-    platforms: ["PlayStation", "Xbox", "PC", "Nintendo Switch"],
-    genre: "RPG",
-    cover:
-      "https://media.rawg.io/media/games/618/618c47b6a41a3f28d77f775d116b2070.jpg",
-  },
-  {
-    id: "4200",
-    title: "Portal 2",
-    platforms: ["PC", "Linux", "macOS", "PlayStation", "Xbox"],
-    genre: "Shooter",
-    cover:
-      "https://media.rawg.io/media/games/2ba/2bac0e87cf45e5b508f227d281c92500.jpg",
-  },
-  {
-    id: "5286",
-    title: "Tomb Raider (2013)",
-    platforms: ["PlayStation", "Xbox", "PC", "macOS"],
-    genre: "Action",
-    cover:
-      "https://media.rawg.io/media/games/021/021c4e21a1824d2526f925eee6371b7f.jpg",
-  },
-  {
-    id: "5679",
-    title: "The Elder Scrolls V: Skyrim",
-    platforms: ["PlayStation", "Xbox", "PC", "Nintendo Switch"],
-    genre: "RPG",
-    cover:
-      "https://media.rawg.io/media/games/7cf/7cfc92f8ef7014febe1691c707b1d47f.jpg",
-  },
-  {
-    id: "12020",
-    title: "Left 4 Dead 2",
-    platforms: ["PC", "Linux", "Xbox"],
-    genre: "Shooter",
-    cover:
-      "https://media.rawg.io/media/games/46d/46d98e6910fbc0706e4fe7b8273463d3.jpg",
-  },
-  {
-    id: "28",
-    title: "Red Dead Redemption 2",
-    platforms: ["PlayStation", "Xbox", "PC"],
-    genre: "Action",
-    cover:
-      "https://media.rawg.io/media/games/511/5118211e409a6f0e08586a376c73426d.jpg",
-  },
-  {
-    id: "13536",
-    title: "Portal",
-    platforms: ["PC", "Linux", "macOS", "PlayStation"],
-    genre: "Puzzle",
-    cover:
-      "https://media.rawg.io/media/games/7fa/7fa0b586293c5861ee32490e953a4996.jpg",
-  },
-  {
-    id: "4220",
-    title: "Half-Life 2",
-    platforms: ["PC", "Linux", "macOS", "Xbox"],
-    genre: "Shooter",
-    cover:
-      "https://media.rawg.io/media/games/b8c/b8c243dfe0228fe965363c6b0b9716d2.jpg",
-  },
-  {
-    id: "400",
-    title: "BioShock Infinite",
-    platforms: ["PlayStation", "Xbox", "PC", "Linux"],
-    genre: "Shooter",
-    cover:
-      "https://media.rawg.io/media/games/fc1/fc1307a27745037bd509d1e65d0d5a2d.jpg",
-  },
-  {
-    id: "802",
-    title: "Borderlands 2",
-    platforms: ["PlayStation", "Xbox", "PC", "Linux", "macOS"],
-    genre: "Shooter",
-    cover:
-      "https://media.rawg.io/media/games/490/4901613b0fe0b9a32d4d7683f0b52a16.jpg",
-  },
-  {
-    id: "3439",
-    title: "Life is Strange",
-    platforms: [
-      "PlayStation",
-      "Xbox",
-      "PC",
-      "Linux",
-      "macOS",
-      "Android",
-      "iOS",
-    ],
-    genre: "Adventure",
-    cover:
-      "https://media.rawg.io/media/games/562/56255a61d7fea1085c52c415e4b4df2f.jpg",
-  },
-  {
-    id: "4286",
-    title: "BioShock",
-    platforms: ["PlayStation", "Xbox", "PC", "macOS"],
-    genre: "Shooter",
-    cover:
-      "https://media.rawg.io/media/games/4a0/4a0a13161a73694308a04f9ca8c9977d.jpg",
-  },
-  {
-    id: "22511",
-    title: "God of War (2018)",
-    platforms: ["PlayStation", "PC"],
-    genre: "Action",
-    cover:
-      "https://media.rawg.io/media/games/4be/4be662140a7a364bc513028d13261324.jpg",
-  },
-  {
-    id: "32",
-    title: "Destiny 2",
-    platforms: ["PlayStation", "Xbox", "PC"],
-    genre: "Shooter",
-    cover:
-      "https://media.rawg.io/media/games/34b/34b1f1850a1c06fd56650328a78d0e5f.jpg",
-  },
-  {
-    id: "3070",
-    title: "Fallout 4",
-    platforms: ["PlayStation", "Xbox", "PC"],
-    genre: "RPG",
-    cover:
-      "https://media.rawg.io/media/games/d82/d82369fc7f32373ab2ea638612c0ba28.jpg",
-  },
-  {
-    id: "1030",
-    title: "Limbo",
-    platforms: [
-      "PlayStation",
-      "Xbox",
-      "PC",
-      "Linux",
-      "macOS",
-      "Nintendo Switch",
-      "Android",
-      "iOS",
-    ],
-    genre: "Puzzle",
-    cover:
-      "https://media.rawg.io/media/games/942/9424c6c2582e059a21a325d0b04a25b7.jpg",
-  },
-  {
-    id: "10142",
-    title: "PAYDAY 2",
-    platforms: ["PlayStation", "Xbox", "PC", "Linux"],
-    genre: "Shooter",
-    cover:
-      "https://media.rawg.io/media/games/73e/73e26264ed5a3b441c25803d1a737c4a.jpg",
-  },
-  {
-    id: "1140",
-    title: "Team Fortress 2",
-    platforms: ["PC", "Linux", "macOS"],
-    genre: "Shooter",
-    cover:
-      "https://media.rawg.io/media/games/46d/46d98e6910fbc0706e4fe7b8273463d3.jpg",
-  },
-  {
-    id: "2454",
-    title: "Doom (2016)",
-    platforms: ["PlayStation", "Xbox", "PC", "Nintendo Switch"],
-    genre: "Shooter",
-    cover:
-      "https://media.rawg.io/media/games/c4b/c4b011a847800e61006ec191e5095d72.jpg",
-  },
-];
+let currentSearch = "";
 
 // Display Names Mapping for Statuses
 const statusNames = {
-  none: "Unplayed",
-  pending: "Pending",
+  none: "Not Played",
+  pending: "Plan to play",
   playing: "Playing",
-  played: "Played",
   completed: "Completed",
   mastered: "Mastered",
-  abandoned: "Abandoned",
-  archived: "Archived",
+  abandoned: "Dropped",
 };
 
-// ==========================================
-// 2. LOCALSTORAGE HELPERS
-// ==========================================
+/* ==========================================
+   2. STORAGE HELPERS
+   ========================================== */
 
 /**
- * Get all user game status preferences from localStorage
- * @returns {Object} Saved statuses key-value pairs
+ * Saves current personal collection array to localStorage
  */
-function getUserStatuses() {
-  const saved = localStorage.getItem("user_game_statuses");
-  return saved ? JSON.parse(saved) : {};
+function saveCollection() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(myCollection));
 }
 
-/**
- * Set status preference for a specific game
- * @param {string} gameId
- * @param {string} newStatus
- */
-function setGameStatus(gameId, newStatus) {
-  const statuses = getUserStatuses();
-  if (newStatus === "none") {
-    delete statuses[gameId];
-  } else {
-    statuses[gameId] = newStatus;
-  }
-  localStorage.setItem("user_game_statuses", JSON.stringify(statuses));
-}
-
-// ==========================================
-// 3. UI HELPER FUNCTIONS & RENDERERS
-// ==========================================
+/* ==========================================
+   3. UI RENDERERS (Main Grid & Platform Icons)
+   ========================================== */
 
 /**
  * Map list of platforms into FontAwesome family icons
- * @param {Array<string>} platformsList
- * @returns {string} String of HTML icon tags
  */
-function renderPlatformIcons(platformsList) {
+function renderPlatformIcons(platformsList = []) {
   const iconSet = new Set();
 
   platformsList.forEach((platformName) => {
     const name = platformName.toLowerCase();
-
     if (name.includes("playstation") || name.includes("ps")) {
       iconSet.add('<i class="fab fa-playstation" title="PlayStation"></i>');
     } else if (name.includes("xbox")) {
@@ -280,31 +81,36 @@ function renderPlatformIcons(platformsList) {
 }
 
 /**
- * Render the game cards into the grid container
- * @param {Array<Object>} gamesList
+ * Render the game cards into the main grid container or display empty state
  */
 function renderGames(gamesList) {
-  const container =
-    document.getElementById("games-grid") ||
-    document.getElementById("games-container");
+  const container = document.getElementById("games-grid");
+  const emptyState = document.getElementById("empty-state");
   const gameCountLabel = document.getElementById("game-count");
 
   if (!container) return;
 
-  const userStatuses = getUserStatuses();
   container.innerHTML = "";
 
-  // Render empty state message if filters yield no results
-  if (gamesList.length === 0) {
-    container.innerHTML = `<p class="no-results">No games found matching your active filters.</p>`;
-    if (gameCountLabel) gameCountLabel.textContent = 0;
+  // Update Game Counter Label
+  if (gameCountLabel) {
+    gameCountLabel.textContent = gamesList.length;
+  }
+
+  // Handle Empty Library or Empty Filter Results
+  if (!gamesList || gamesList.length === 0) {
+    container.style.display = "none";
+    if (emptyState) emptyState.classList.remove("hidden");
     return;
   }
 
-  gamesList.forEach((game) => {
-    const currentStatus = userStatuses[game.id] || "none";
-    const platformIconsHTML = renderPlatformIcons(game.platforms);
+  // Hide empty state and show grid
+  container.style.display = "grid";
+  if (emptyState) emptyState.classList.add("hidden");
 
+  // Render each card in personal collection
+  gamesList.forEach((game) => {
+    const platformIconsHTML = renderPlatformIcons(game.platforms);
     const card = document.createElement("div");
     card.classList.add("game-card");
 
@@ -315,19 +121,17 @@ function renderGames(gamesList) {
         
         <div class="game-meta">
           <div class="platform-icons">${platformIconsHTML}</div>
-          <span class="genre-tag">${game.genre}</span>
+          <span class="genre-tag">${game.genre || "Game"}</span>
         </div>
         
         <div class="status-selector-wrapper">
-          <select id="status-${game.id}" class="status-select" data-id="${game.id}">
-            <option value="none" ${currentStatus === "none" ? "selected" : ""}>Not played</option>
-            <option value="pending" ${currentStatus === "pending" ? "selected" : ""}>Plan to play</option>
-            <option value="playing" ${currentStatus === "playing" ? "selected" : ""}>Playing</option>
-            <option value="played" ${currentStatus === "played" ? "selected" : ""}>Played</option>
-            <option value="completed" ${currentStatus === "completed" ? "selected" : ""}>Completed</option>
-            <option value="mastered" ${currentStatus === "mastered" ? "selected" : ""}>Mastered</option>
-            <option value="abandoned" ${currentStatus === "abandoned" ? "selected" : ""}>Dropped</option>
-            <option value="archived" ${currentStatus === "archived" ? "selected" : ""}>Archived</option>
+          <select class="status-select" data-id="${game.id}">
+            <option value="none" ${game.status === "none" ? "selected" : ""}>Not played</option>
+            <option value="pending" ${game.status === "pending" ? "selected" : ""}>Plan to play</option>
+            <option value="playing" ${game.status === "playing" ? "selected" : ""}>Playing</option>
+            <option value="completed" ${game.status === "completed" ? "selected" : ""}>Completed</option>
+            <option value="mastered" ${game.status === "mastered" ? "selected" : ""}>Mastered</option>
+            <option value="abandoned" ${game.status === "abandoned" ? "selected" : ""}>Dropped</option>
           </select>
         </div>
       </div>
@@ -336,141 +140,184 @@ function renderGames(gamesList) {
     container.appendChild(card);
   });
 
-  // Attach status dropdown change listeners
+  // Attach status change listeners to saved games
   container.querySelectorAll(".status-select").forEach((select) => {
     select.addEventListener("change", (e) => {
       const gameId = e.target.getAttribute("data-id");
       const newStatus = e.target.value;
-      setGameStatus(gameId, newStatus);
-      filterGames();
+
+      const targetGame = myCollection.find(
+        (g) => g.id.toString() === gameId.toString(),
+      );
+      if (targetGame) {
+        targetGame.status = newStatus;
+        saveCollection();
+        filterGames();
+      }
     });
   });
-
-  // Update game counter label
-  if (gameCountLabel) {
-    gameCountLabel.textContent = gamesList.length;
-  }
 }
 
-// ==========================================
-// 4. FILTERING LOGIC
-// ==========================================
+/* ==========================================
+   4. FILTERING LOGIC
+   ========================================== */
 
-/**
- * Filter catalog dynamically based on active platform filter and state
- */
 function filterGames() {
-  const activePlatformBtn = document.querySelector(
-    ".filter-btn[data-platform].active",
-  );
-  const selectedPlatform = activePlatformBtn
-    ? activePlatformBtn.getAttribute("data-platform")
-    : "all";
+  const filtered = myCollection.filter((game) => {
+    // Search text filter
+    const matchesSearch = game.title
+      .toLowerCase()
+      .includes(currentSearch.toLowerCase());
 
-  const filtered = fetchedGames.filter((game) => {
+    // Platform filter
     const matchesPlatform =
-      selectedPlatform === "all" ||
-      game.platforms.some((p) =>
-        p.toLowerCase().includes(selectedPlatform.toLowerCase()),
-      );
+      currentPlatform === "all" ||
+      (game.platforms &&
+        game.platforms.some((p) =>
+          p.toLowerCase().includes(currentPlatform.toLowerCase()),
+        ));
 
-    return matchesPlatform;
+    // State filter
+    const matchesStatus =
+      currentStatus === "all" || game.status === currentStatus;
+
+    return matchesSearch && matchesPlatform && matchesStatus;
   });
 
   renderGames(filtered);
 }
 
-// ==========================================
-// 5. ASYNC DATA FETCHING & API RESILIENCE
-// ==========================================
+/* ==========================================
+   5. MODAL & RAWG SEARCH LOGIC
+   ========================================== */
+
+// Helper function to close modal
+function closeModal() {
+  const modalOverlay = document.getElementById("add-game-modal");
+  if (modalOverlay) modalOverlay.classList.add("hidden");
+}
 
 /**
- * Fetch games catalog from RAWG API or fallback to cached/local data
+ * Search games directly from RAWG API
  */
-async function loadCatalog() {
-  const container =
-    document.getElementById("games-grid") ||
-    document.getElementById("games-container");
+async function searchRAWGGames(query) {
+  const modalResultsContainer = document.getElementById("modal-search-results");
+  if (!modalResultsContainer) return;
 
-  // Check cached catalog for instant rendering
-  const cachedGames = localStorage.getItem("cached_catalog_games");
-
-  if (cachedGames) {
-    fetchedGames = JSON.parse(cachedGames);
-    renderGames(fetchedGames);
-  } else if (container) {
-    container.innerHTML = `<p class="loading-state">Loading catalog...</p>`;
-  }
+  modalResultsContainer.innerHTML = `<p class="loading-state" style="text-align:center; padding: 2rem;">Searching games...</p>`;
 
   try {
-    const response = await fetch(API_URL);
-
-    if (!response.ok) {
-      throw new Error(`API responded with status: ${response.status}`);
-    }
-
+    const response = await fetch(
+      `${API_URL}&search=${encodeURIComponent(query)}&page_size=6`,
+    );
     const data = await response.json();
 
-    fetchedGames = data.results.map((game) => ({
-      id: game.id.toString(),
-      title: game.name,
-      platforms: game.platforms
-        ? game.platforms.map((p) => p.platform.name)
-        : ["PC"],
-      genre:
-        game.genres && game.genres.length > 0 ? game.genres[0].name : "Action",
-      cover:
-        game.background_image ||
-        "https://via.placeholder.com/400x225?text=No+Cover",
-    }));
-
-    // Cache successful response locally
-    localStorage.setItem("cached_catalog_games", JSON.stringify(fetchedGames));
-    renderGames(fetchedGames);
-  } catch (error) {
-    console.warn(
-      "RAWG API connection failed (using cached/fallback local data):",
-      error,
-    );
-
-    if (!fetchedGames || fetchedGames.length === 0) {
-      fetchedGames = FALLBACK_GAMES;
-      renderGames(fetchedGames);
+    if (!data.results || data.results.length === 0) {
+      modalResultsContainer.innerHTML = `<p style="text-align:center; padding: 2rem;">No games found on RAWG.</p>`;
+      return;
     }
+
+    renderModalResults(data.results);
+  } catch (error) {
+    console.error("RAWG Search error:", error);
+    modalResultsContainer.innerHTML = `<p style="text-align:center; color: red; padding: 2rem;">Error connecting to RAWG database.</p>`;
   }
 }
 
-// ==========================================
-// 6. INITIALIZATION & EVENT LISTENERS
-// ==========================================
+/**
+ * Render search result rows inside the modal
+ */
+function renderModalResults(results) {
+  const modalResultsContainer = document.getElementById("modal-search-results");
+  if (!modalResultsContainer) return;
 
-// Initial Theme Switcher setup based on LocalStorage
-const themeToggleInput = document.getElementById("theme-toggle-input");
-const savedTheme = localStorage.getItem("theme");
+  modalResultsContainer.innerHTML = "";
 
-if (savedTheme === "light") {
-  document.documentElement.setAttribute("data-theme", "light");
-  if (themeToggleInput) themeToggleInput.checked = true;
-}
+  results.forEach((game) => {
+    const isAlreadySaved = myCollection.some(
+      (g) => g.id.toString() === game.id.toString(),
+    );
+    const platforms = game.platforms
+      ? game.platforms.map((p) => p.platform.name)
+      : ["PC"];
+    const coverUrl =
+      game.background_image ||
+      "https://via.placeholder.com/400x225?text=No+Cover";
+    const genre =
+      game.genres && game.genres.length > 0 ? game.genres[0].name : "Action";
 
-if (themeToggleInput) {
-  themeToggleInput.addEventListener("change", (e) => {
-    if (e.target.checked) {
-      document.documentElement.setAttribute("data-theme", "light");
-      localStorage.setItem("theme", "light");
-    } else {
-      document.documentElement.removeAttribute("data-theme");
-      localStorage.setItem("theme", "dark");
+    const item = document.createElement("div");
+    item.classList.add("search-result-item");
+
+    item.innerHTML = `
+      <div class="search-result-info">
+        <img src="${coverUrl}" alt="${game.name}" class="search-result-thumb">
+        <div class="search-result-details">
+          <h4>${game.name}</h4>
+          <p>${platforms.join(", ")}</p>
+        </div>
+      </div>
+      <button class="btn-add-to-lib ${isAlreadySaved ? "added" : ""}" data-id="${game.id}">
+        ${isAlreadySaved ? '<i class="fas fa-check"></i> Added' : '<i class="fas fa-plus"></i> Add'}
+      </button>
+    `;
+
+    modalResultsContainer.appendChild(item);
+
+    // Event listener for Add Button
+    const addBtn = item.querySelector(".btn-add-to-lib");
+    if (addBtn && !isAlreadySaved) {
+      addBtn.addEventListener("click", () => {
+        const newGame = {
+          id: game.id.toString(),
+          title: game.name,
+          platforms: platforms,
+          genre: genre,
+          cover: coverUrl,
+          status: "pending", // Default status on add
+        };
+
+        myCollection.push(newGame);
+        saveCollection();
+
+        // Update button UI state
+        addBtn.classList.add("added");
+        addBtn.innerHTML = '<i class="fas fa-check"></i> Added';
+
+        // Re-render main library grid behind modal
+        filterGames();
+      });
     }
   });
 }
 
-// DOM Ready initialization
-document.addEventListener("DOMContentLoaded", () => {
-  // Load Catalog
-  loadCatalog();
+/* ==========================================
+   6. INITIALIZATION & EVENT LISTENERS
+   ========================================== */
 
-  // Search input handler
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Initial Theme Switcher setup
+  const themeToggleInput = document.getElementById("theme-toggle-input");
+  const savedTheme = localStorage.getItem("theme");
+
+  if (savedTheme === "light") {
+    document.documentElement.setAttribute("data-theme", "light");
+    if (themeToggleInput) themeToggleInput.checked = true;
+  }
+
+  if (themeToggleInput) {
+    themeToggleInput.addEventListener("change", (e) => {
+      if (e.target.checked) {
+        document.documentElement.setAttribute("data-theme", "light");
+        localStorage.setItem("theme", "light");
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+        localStorage.setItem("theme", "dark");
+      }
+    });
+  }
+
+  // 2. Main Collection Live Search Bar Handler
   const searchInput = document.getElementById("search-input");
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
@@ -479,11 +326,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Filter Buttons Handler (Platforms and Statuses)
+  // 3. Sidebar Filter Buttons Handler (Platforms and Statuses)
   const filterButtons = document.querySelectorAll(".filter-btn");
   filterButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      if (button.dataset.platform) {
+      if (button.dataset.platform !== undefined) {
         currentPlatform = button.dataset.platform;
         document
           .querySelectorAll("[data-platform]")
@@ -491,10 +338,10 @@ document.addEventListener("DOMContentLoaded", () => {
         button.classList.add("active");
       }
 
-      if (button.dataset.status) {
-        currentStatus = button.dataset.status;
+      if (button.dataset.state !== undefined) {
+        currentStatus = button.dataset.state;
         document
-          .querySelectorAll("[data-status]")
+          .querySelectorAll("[data-state]")
           .forEach((btn) => btn.classList.remove("active"));
         button.classList.add("active");
       }
@@ -503,7 +350,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Toggle 'See More' Platforms Dropdown Handler
+  // 4. Toggle 'See More' Platforms Dropdown Handler
   const togglePlatformsBtn = document.getElementById("toggle-platforms-btn");
   const morePlatformsContainer = document.getElementById("more-platforms");
 
@@ -514,10 +361,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const isExpanded = !morePlatformsContainer.classList.contains("hidden");
       const btnText = togglePlatformsBtn.querySelector("span");
-
-      if (btnText) {
-        btnText.textContent = isExpanded ? "See less" : "See more";
-      }
+      if (btnText) btnText.textContent = isExpanded ? "See less" : "See more";
     });
   }
+
+  // 5. Modal Event Handlers Setup (Open, Close & Live Search)
+  const addGameBtn = document.getElementById("add-game-btn");
+  const modalOverlay = document.getElementById("add-game-modal");
+  const closeModalBtn = document.getElementById("close-modal-btn");
+  const modalSearchInput = document.getElementById("modal-search-input");
+  const modalResultsContainer = document.getElementById("modal-search-results");
+
+  if (addGameBtn && modalOverlay) {
+    addGameBtn.addEventListener("click", () => {
+      modalOverlay.classList.remove("hidden");
+      if (modalSearchInput) modalSearchInput.focus();
+    });
+  }
+
+  if (closeModalBtn) closeModalBtn.addEventListener("click", closeModal);
+
+  if (modalOverlay) {
+    modalOverlay.addEventListener("click", (e) => {
+      if (e.target === modalOverlay) closeModal();
+    });
+  }
+
+  // Live Search inside Modal handler
+  let searchDebounceTimeout = null;
+  if (modalSearchInput) {
+    modalSearchInput.addEventListener("input", (e) => {
+      const query = e.target.value.trim();
+      clearTimeout(searchDebounceTimeout);
+
+      if (query.length < 2) {
+        if (modalResultsContainer) {
+          modalResultsContainer.innerHTML = `
+            <div class="modal-empty-hint">
+              <i class="fas fa-gamepad"></i>
+              <p>Type a title above to search from RAWG database.</p>
+            </div>`;
+        }
+        return;
+      }
+
+      searchDebounceTimeout = setTimeout(() => {
+        searchRAWGGames(query);
+      }, 400);
+    });
+  }
+
+  // 6. Initial render of user's personal collection
+  filterGames();
 });
