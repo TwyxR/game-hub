@@ -1,24 +1,30 @@
-/* Global variables */
+/* ==========================================
+   1. GLOBAL VARIABLES & THEMING
+   ========================================== */
+
 :root {
-  --bg-primary: #0f172a; /* Fondo principal (Oscuro) */
-  --bg-secondary: #1e293b; /* Fondo de tarjetas y sidebar */
-  --text-main: #f8fafc; /* Color de texto principal */
-  --text-muted: #94a3b8; /* Texto secundario / gris */
-  --accent-color: #6366f1; /* Color de acento (Púrpura/Azul) */
-  --border-color: #334155; /* Borde discreto */
+  --bg-primary: #0f172a; /* Main dark background */
+  --bg-secondary: #1e293b; /* Cards and sidebar background */
+  --text-main: #f8fafc; /* Primary text color */
+  --text-muted: #94a3b8; /* Secondary/muted text */
+  --accent-color: #6366f1; /* Primary accent (Purple/Indigo) */
+  --border-color: #334155; /* Subtle borders */
 }
 
-/* Tema Claro (Light Mode) */
+/* Light Theme Overrides */
 [data-theme="light"] {
   --bg-primary: #f4f6f9;
   --bg-secondary: #ffffff;
-  --border-color: #e2e8f0;
   --text-main: #1a202c;
   --text-muted: #718096;
-  --accent-color: #6366f1; /* Mantenemos o ajustamos el color de acento */
+  --border-color: #e2e8f0;
+  /* Accent color remains the same for brand consistency */
 }
 
-/* Remove browser margin and padding */
+/* ==========================================
+   2. RESET & BASE STYLES
+   ========================================== */
+
 * {
   margin: 0;
   padding: 0;
@@ -32,14 +38,44 @@ body {
     sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-main);
+  /* Smooth transition when switching themes */
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
-/* Styles for the header */
+/* ==========================================
+   3. LAYOUT & GRID
+   ========================================== */
+
+/* Main Two-Column Layout */
+.layout-container {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: calc(100vh - 70px);
+}
+
+/* Sidebar Wrapper */
+.sidebar {
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-right: 1px solid var(--border-color);
+}
+
+/* Main Content Wrapper */
+.content-area {
+  padding: 2rem;
+}
+
+/* ==========================================
+   4. HEADER & NAVIGATION
+   ========================================== */
+
 .main-header {
   display: flex;
-  justify-content: space-between; /* Distribuye el espacio entre los 3 elementos */
-  align-items: center; /* Centra verticalmente los elementos */
-  padding: 1rem 2rem; /* Relleno arriba/abajo y a los lados */
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
   background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
 }
@@ -49,36 +85,25 @@ body {
   color: var(--accent-color);
 }
 
-/* Search bar input */
+/* Search Bar */
 .search-bar input {
+  width: 250px;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   border: 1px solid var(--border-color);
   background-color: var(--bg-primary);
   color: var(--text-main);
-  width: 250px;
   outline: none;
+  transition: border-color 0.2s ease;
 }
 
 .search-bar input:focus {
-  border-color: var(--accent-color); /* Se ilumina al hacer clic */
+  border-color: var(--accent-color);
 }
 
-/* Estructura principal de 2 columnas */
-.layout-container {
-  display: grid;
-  grid-template-columns: 240px 1fr; /* Columna izquierda fija, derecha flexible */
-  min-height: calc(
-    100vh - 70px
-  ); /* Ocupa el resto de la altura de la pantalla */
-}
-
-/* Sidebar */
-.sidebar {
-  background-color: var(--bg-secondary);
-  padding: 1.5rem;
-  border-right: 1px solid var(--border-color);
-}
+/* ==========================================
+   5. SIDEBAR FILTERS
+   ========================================== */
 
 .filter-group {
   margin-top: 1.5rem;
@@ -89,9 +114,10 @@ body {
   font-size: 0.85rem;
   margin-bottom: 0.5rem;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* Botones de filtro */
+/* Filter Buttons */
 .filter-btn {
   display: block;
   width: 100%;
@@ -103,6 +129,7 @@ body {
   text-align: left;
   border-radius: 6px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .filter-btn:hover,
@@ -112,112 +139,105 @@ body {
   color: var(--accent-color);
 }
 
-/* Área del contenido principal */
-.content-area {
-  padding: 2rem;
+/* Expandable Platforms Area */
+.extra-platforms {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
 }
 
-/* Contenedor de la rejilla de juegos */
+.extra-platforms.hidden {
+  display: none;
+}
+
+/* Toggle 'See More' Button */
+.show-more-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  margin-top: 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--accent-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.show-more-btn:hover {
+  opacity: 0.8;
+}
+
+.show-more-btn i {
+  font-size: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+.show-more-btn.open i {
+  transform: rotate(180deg);
+}
+
+/* ==========================================
+   6. GAMES GRID & CARDS
+   ========================================== */
+
 .games-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem; /* Espacio entre cada tarjeta */
+  gap: 1.5rem;
   margin-top: 1.5rem;
 }
 
-/* Card Container Layout & Appearance */
+/* Card Container */
 .game-card {
   display: flex;
   flex-direction: column;
-  height: 100%; /* Ensures uniform height across grid items */
-  background-color: var(--bg-secondary); /* Restores card background color */
-  border: 1px solid var(--border-color); /* Restores card border */
-  border-radius: 8px; /* Restores rounded corners */
-  overflow: hidden; /* Clips cover image within rounded borders */
-  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth hover transition */
+  height: 100%;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .game-card:hover {
-  transform: translateY(-4px); /* Hover lift effect */
+  transform: translateY(-4px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
+/* Card Image */
 .game-card img {
   width: 100%;
   height: 280px;
-  object-fit: cover; /* Mantiene la proporción de la imagen sin deformarla */
+  object-fit: cover;
 }
 
+/* Card Content Area */
 .game-info {
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Fills remaining card space */
+  flex-grow: 1;
   padding: 1rem;
 }
 
-.game-info h3 {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-}
-
 .game-title {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
   line-height: 1.3;
 }
 
-.game-tags {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.tag {
-  font-size: 0.75rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  background-color: var(--bg-primary);
-  color: var(--text-muted);
-}
-
-.status-selector-wrapper {
-  margin-top: auto; /* Magic line: pushes selector to the bottom */
-  width: 100%;
-}
-
-.status-select {
-  width: 100%;
-  padding: 0.55rem 2.2rem 0.55rem 0.8rem; /* Right padding creates guaranteed space for the arrow */
-  border-radius: 6px;
-  background-color: var(--bg-primary);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-  cursor: pointer;
-  font-size: 0.85rem;
-  outline: none;
-  box-sizing: border-box;
-
-  /* Remove default browser styles and arrow */
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-
-  /* Add custom clean SVG arrow centered on the right with padding */
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 1rem;
-}
-
-.status-select:focus {
-  border-color: var(--accent-color);
-}
-
-/* Platform Icons & Metadata Styles */
+/* Card Meta (Platforms & Genre) */
 .game-meta {
   display: flex;
-  flex-direction: column; /* Stack icons and genre neatly */
+  flex-direction: column;
   gap: 0.4rem;
   margin-bottom: 1rem;
   font-size: 0.85rem;
@@ -226,14 +246,15 @@ body {
 
 .platform-icons {
   display: flex;
-  flex-wrap: wrap; /* Wraps clean icons if game has many platforms */
-  gap: 0.4rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   align-items: center;
 }
 
 .platform-icons i {
   font-size: 1rem;
   color: var(--accent-color);
+  transition: transform 0.2s ease;
 }
 
 .platform-icons i:hover {
@@ -245,7 +266,60 @@ body {
   opacity: 0.8;
 }
 
-/* Custom Theme Switch Toggle */
+/* Dynamic Text Badges for Unmapped Platforms */
+.platform-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  background-color: var(--bg-primary);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  line-height: 1;
+}
+
+/* Status Selector Dropdown */
+.status-selector-wrapper {
+  margin-top: auto; /* Pushes selector to the bottom of the card */
+  width: 100%;
+}
+
+.status-select {
+  width: 100%;
+  padding: 0.55rem 2.2rem 0.55rem 0.8rem;
+  border-radius: 6px;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  font-size: 0.85rem;
+  outline: none;
+  box-sizing: border-box;
+
+  /* Custom Dropdown Arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
+
+.status-select:focus {
+  border-color: var(--accent-color);
+}
+
+/* Gold styling for Mastered games */
+.mastered-card {
+  border-color: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+}
+
+/* ==========================================
+   7. THEME SWITCHER COMPONENT
+   ========================================== */
+
 .theme-switch {
   position: relative;
   display: inline-block;
@@ -301,54 +375,11 @@ body {
   font-size: 0.85rem;
 }
 
-/* Checked state (Light Mode) */
+/* Checked State Styles */
 input:checked + .slider {
   background-color: var(--accent-color);
 }
 
 input:checked + .slider:before {
   transform: translateX(28px);
-}
-
-/* Extra Platforms Collapsible Area */
-.extra-platforms {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  overflow: hidden;
-  transition: all 0.3s ease-in-out;
-}
-
-.extra-platforms.hidden {
-  display: none;
-}
-
-/* See More / Show Less Button */
-.show-more-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0.4rem 0.5rem;
-  margin-top: 0.5rem;
-  background: transparent;
-  border: none;
-  color: var(--accent-color);
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.show-more-btn:hover {
-  opacity: 0.8;
-}
-
-.show-more-btn i {
-  font-size: 0.75rem;
-  transition: transform 0.3s ease;
-}
-
-.show-more-btn.open i {
-  transform: rotate(180deg); /* Flips arrow up when expanded */
 }

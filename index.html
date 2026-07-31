@@ -4,28 +4,33 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GameHub - My Game Collection</title>
+
     <!-- FontAwesome Icons CDN -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    <!-- Link to CSS -->
+
+    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="styles.css" />
   </head>
 
   <body>
-    <!-- Main header -->
+    <!-- ==========================================
+         1. MAIN HEADER (Logo, Search, Theme Switch)
+         ========================================== -->
     <header class="main-header">
+      <!-- Brand Logo -->
       <div class="logo">
         <h1>GameHub</h1>
       </div>
 
-      <!-- Search bar -->
+      <!-- Live Search Bar -->
       <div class="search-bar">
         <input type="text" id="search-input" placeholder="Search games..." />
       </div>
 
-      <!-- Theme Toggle Switch -->
+      <!-- Animated Theme Toggle Switch (Dark / Light) -->
       <label class="theme-switch" for="theme-toggle-input">
         <input type="checkbox" id="theme-toggle-input" />
         <span class="slider round">
@@ -35,39 +40,67 @@
       </label>
     </header>
 
-    <!-- Main content (sidebar + grid) -->
+    <!-- ==========================================
+         2. LAYOUT CONTAINER (Sidebar + Main Content)
+         ========================================== -->
     <div class="layout-container">
-      <!-- Siderbar content (Filters)-->
+      <!-- Sidebar Filters Area -->
       <aside class="sidebar">
         <h3>Filters</h3>
 
+        <!-- Platform Filters Group -->
         <div class="filter-group">
-        <h4>Platforms</h4>
-  
-        <!-- Platforms Always Visible -->
-        <button class="filter-btn active" data-platform="all">All Platforms</button>
-        <button class="filter-btn" data-platform="pc"><i class="fas fa-desktop"></i> PC</button>
-        <button class="filter-btn" data-platform="playstation"><i class="fab fa-playstation"></i> PlayStation</button>
-        <button class="filter-btn" data-platform="xbox"><i class="fab fa-xbox"></i> Xbox</button>
-        <button class="filter-btn" data-platform="nintendo"><i class="fas fa-gamepad"></i> Nintendo</button>
-  
-        <!-- Extended Platforms Container (Hidden by Default) -->
-        <div id="more-platforms" class="extra-platforms hidden">
-        <button class="filter-btn" data-platform="ios"><i class="fab fa-apple"></i> iOS</button>
-        <button class="filter-btn" data-platform="android"><i class="fab fa-android"></i> Android</button>
-        <button class="filter-btn" data-platform="apple macintosh"><i class="fab fa-apple"></i> macOS</button>
-        <button class="filter-btn" data-platform="linux"><i class="fab fa-linux"></i> Linux</button>
-        <button class="filter-btn" data-platform="sega"><i class="fas fa-ghost"></i> SEGA</button>
-        <button class="filter-btn" data-platform="atari"><i class="fas fa-gamepad"></i> Atari</button>
-        <button class="filter-btn" data-platform="web"><i class="fas fa-globe"></i> Web</button>
-    </div>
+          <h4>Platforms</h4>
 
-  <!-- Show More Toggle Button -->
-  <button id="toggle-platforms-btn" class="show-more-btn">
-    <span>See more</span> <i class="fas fa-chevron-down"></i>
-  </button>
-</div>
+          <!-- Primary Platforms Always Visible -->
+          <button class="filter-btn active" data-platform="all">
+            All Platforms
+          </button>
+          <button class="filter-btn" data-platform="pc">
+            <i class="fas fa-desktop"></i> PC
+          </button>
+          <button class="filter-btn" data-platform="playstation">
+            <i class="fab fa-playstation"></i> PlayStation
+          </button>
+          <button class="filter-btn" data-platform="xbox">
+            <i class="fab fa-xbox"></i> Xbox
+          </button>
+          <button class="filter-btn" data-platform="nintendo">
+            <i class="fas fa-gamepad"></i> Nintendo
+          </button>
 
+          <!-- Secondary Platforms Container (Hidden by Default) -->
+          <div id="more-platforms" class="extra-platforms hidden">
+            <button class="filter-btn" data-platform="ios">
+              <i class="fab fa-apple"></i> iOS
+            </button>
+            <button class="filter-btn" data-platform="android">
+              <i class="fab fa-android"></i> Android
+            </button>
+            <button class="filter-btn" data-platform="apple macintosh">
+              <i class="fab fa-apple"></i> macOS
+            </button>
+            <button class="filter-btn" data-platform="linux">
+              <i class="fab fa-linux"></i> Linux
+            </button>
+            <button class="filter-btn" data-platform="sega">
+              <i class="fas fa-ghost"></i> SEGA
+            </button>
+            <button class="filter-btn" data-platform="atari">
+              <i class="fas fa-gamepad"></i> Atari
+            </button>
+            <button class="filter-btn" data-platform="web">
+              <i class="fas fa-globe"></i> Web
+            </button>
+          </div>
+
+          <!-- Expandable Platform Dropdown Button -->
+          <button id="toggle-platforms-btn" class="show-more-btn">
+            <span>See more</span> <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+
+        <!-- Status / Ownership State Filters Group -->
         <div class="filter-group">
           <h4>State</h4>
           <button class="filter-btn active" data-state="all">All</button>
@@ -76,19 +109,20 @@
         </div>
       </aside>
 
-      <!-- Grid content (Gallery Games)-->
+      <!-- Main Content Area (Dynamic Games Grid) -->
       <main class="content-area">
         <div class="content-header">
           <h2>My Game Collection <span id="game-count">0</span></h2>
         </div>
 
+        <!-- Dynamic Game Cards Injection Grid -->
         <section id="games-grid" class="games-grid">
-          <!-- Game cards will be dynamically inserted here -->
+          <!-- Game cards are dynamically rendered via app.js -->
         </section>
       </main>
     </div>
 
-    <!-- Link to JavaScript -->
+    <!-- Application Script -->
     <script src="app.js"></script>
   </body>
 </html>
