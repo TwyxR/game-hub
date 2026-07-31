@@ -30,6 +30,11 @@
         <input type="text" id="search-input" placeholder="Search games..." />
       </div>
 
+      <!-- Add new games -->
+      <button id="add-game-btn" class="add-game-btn">
+        <i class="fas fa-plus"></i> Add Game
+      </button>
+
       <!-- Animated Theme Toggle Switch (Dark / Light) -->
       <label class="theme-switch" for="theme-toggle-input">
         <input type="checkbox" id="theme-toggle-input" />
@@ -119,6 +124,16 @@
         <section id="games-grid" class="games-grid">
           <!-- Game cards are dynamically rendered via app.js -->
         </section>
+
+        <!-- Empty Collection Placeholder State (Hidden by default) -->
+        <div id="empty-state" class="empty-state hidden">
+          <i class="fas fa-folder-open empty-icon"></i>
+          <h3>Your collection is empty</h3>
+          <p>
+            Start building your personal library by clicking the "Add Game"
+            button above.
+          </p>
+        </div>
       </main>
     </div>
 
