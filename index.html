@@ -105,12 +105,25 @@
           </button>
         </div>
 
-        <!-- Status / Ownership State Filters Group -->
+        <!-- Status / Progress Filters Group -->
         <div class="filter-group">
-          <h4>State</h4>
+          <h4>Status</h4>
           <button class="filter-btn active" data-state="all">All</button>
-          <button class="filter-btn" data-state="owned">Owned</button>
-          <button class="filter-btn" data-state="wishlist">Wishlist</button>
+          <button class="filter-btn" data-state="pending">
+            <i class="fas fa-clock"></i> Plan to play
+          </button>
+          <button class="filter-btn" data-state="playing">
+            <i class="fas fa-gamepad"></i> Playing
+          </button>
+          <button class="filter-btn" data-state="completed">
+            <i class="fas fa-check-circle"></i> Completed
+          </button>
+          <button class="filter-btn" data-state="mastered">
+            <i class="fas fa-trophy"></i> Mastered
+          </button>
+          <button class="filter-btn" data-state="abandoned">
+            <i class="fas fa-times-circle"></i> Dropped
+          </button>
         </div>
       </aside>
 

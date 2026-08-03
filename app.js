@@ -114,6 +114,11 @@ function renderGames(gamesList) {
     const card = document.createElement("div");
     card.classList.add("game-card");
 
+    // Add golden border highlight if the game status is set to Mastered
+    if (game.status === "mastered") {
+      card.classList.add("mastered-card");
+    }
+
     card.innerHTML = `
       <img src="${game.cover}" alt="${game.title}" class="game-cover" loading="lazy">
       <div class="game-info">
