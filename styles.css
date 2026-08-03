@@ -672,3 +672,27 @@ input:checked + .slider:before {
   color: #ffffff;
   transform: scale(1.1);
 }
+
+/* Smooth hover zoom for game covers */
+.game-card .game-cover {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.game-card:hover .game-cover {
+  transform: scale(1.04);
+}
+
+/* API Error state inside modal */
+.api-error-message {
+  text-align: center;
+  padding: 2rem;
+  color: #f87171; /* Light red */
+}
+
+.api-error-message i {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}

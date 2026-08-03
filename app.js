@@ -153,16 +153,24 @@ function renderGames(gamesList) {
   // Attach delete event listeners to each card
   container.querySelectorAll(".delete-game-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
-      const gameId = e.currentTarget.getAttribute("data-id");
+      const gameTitle = e.currentTarget
+        .closest(".game-card")
+        .querySelector(".game-title").textContent;
 
-      // Filter out the deleted game from myCollection
-      myCollection = myCollection.filter(
-        (g) => g.id.toString() !== gameId.toString(),
-      );
+      // Ask for confirmation before deleting
+      if (
+        confirm(
+          `Are you sure you want to remove "${gameTitle}" from your collection?`,
+        )
+      ) {
+        const gameId = e.currentTarget.getAttribute("data-id");
 
-      // Save changes and update UI
-      saveCollection();
-      filterGames();
+        myCollection = myCollection.filter(
+          (g) => g.id.toString() !== gameId.toString(),
+        );
+        saveCollection();
+        filterGames();
+      }
     });
   });
 
@@ -236,6 +244,21 @@ async function searchRAWGGames(query) {
     const response = await fetch(
       `${API_URL}&search=${encodeURIComponent(query)}&page_size=6`,
     );
+
+    // Handle API Rate Limit (Too Many Requests - Error 429)
+    if (response.status === 429) {
+      modalResultsContainer.innerHTML = `
+        <div class="api-error-message">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>API rate limit reached. Please wait a minute and try again.</p>
+        </div>`;
+      return;
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
     const data = await response.json();
 
     if (!data.results || data.results.length === 0) {
@@ -246,7 +269,11 @@ async function searchRAWGGames(query) {
     renderModalResults(data.results);
   } catch (error) {
     console.error("RAWG Search error:", error);
-    modalResultsContainer.innerHTML = `<p style="text-align:center; color: red; padding: 2rem;">Error connecting to RAWG database.</p>`;
+    modalResultsContainer.innerHTML = `
+      <div class="api-error-message">
+        <i class="fas fa-wifi"></i>
+        <p>Could not load games. Please check your connection or wait a minute.</p>
+      </div>`;
   }
 }
 
