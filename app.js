@@ -120,15 +120,20 @@ function renderGames(gamesList) {
     }
 
     card.innerHTML = `
+      <div class="card-header-actions">
+        <button class="delete-game-btn" data-id="${game.id}" title="Remove game">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
       <img src="${game.cover}" alt="${game.title}" class="game-cover" loading="lazy">
       <div class="game-info">
         <h3 class="game-title">${game.title}</h3>
-        
+    
         <div class="game-meta">
           <div class="platform-icons">${platformIconsHTML}</div>
           <span class="genre-tag">${game.genre || "Game"}</span>
         </div>
-        
+    
         <div class="status-selector-wrapper">
           <select class="status-select" data-id="${game.id}">
             <option value="none" ${game.status === "none" ? "selected" : ""}>Not played</option>
@@ -143,6 +148,22 @@ function renderGames(gamesList) {
     `;
 
     container.appendChild(card);
+  });
+
+  // Attach delete event listeners to each card
+  container.querySelectorAll(".delete-game-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const gameId = e.currentTarget.getAttribute("data-id");
+
+      // Filter out the deleted game from myCollection
+      myCollection = myCollection.filter(
+        (g) => g.id.toString() !== gameId.toString(),
+      );
+
+      // Save changes and update UI
+      saveCollection();
+      filterGames();
+    });
   });
 
   // Attach status change listeners to saved games

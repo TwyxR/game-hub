@@ -204,7 +204,8 @@ body {
   overflow: hidden;
   transition:
     transform 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .game-card:hover {
@@ -313,7 +314,7 @@ body {
 /* Gold styling for Mastered games */
 .mastered-card {
   border-color: #fbbf24;
-  box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
 }
 
 /* ==========================================
@@ -631,4 +632,43 @@ input:checked + .slider:before {
 .btn-add-to-lib.added {
   background-color: #10b981;
   cursor: default;
+}
+
+.count-badge {
+  font-size: 0.9rem;
+  background-color: var(--border-color);
+  color: var(--text-muted);
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+/* Delete button on game cards */
+.game-card {
+  position: relative; /* Essential for absolute positioning of delete button */
+}
+
+.delete-game-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(15, 23, 42, 0.75);
+  color: #ef4444; /* Red color */
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.delete-game-btn:hover {
+  background-color: #ef4444;
+  color: #ffffff;
+  transform: scale(1.1);
 }
