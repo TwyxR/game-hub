@@ -76,6 +76,9 @@ function renderPlatformIcons(platformsList = []) {
   return Array.from(iconSet).join(" ");
 }
 
+/**
+ * Render the game cards into the main grid container with platform frames
+ */
 function renderGames(gamesList) {
   const container = document.getElementById("games-grid");
   const emptyState = document.getElementById("empty-state");
@@ -107,13 +110,24 @@ function renderGames(gamesList) {
       card.classList.add("mastered-card");
     }
 
+    // Determine cover box class (default to switch2 if not specified)
+    const boxClass = game.selectedBox
+      ? `platform-${game.selectedBox}`
+      : "platform-switch2";
+
     card.innerHTML = `
       <div class="card-header-actions">
         <button class="delete-game-btn" data-id="${game.id}" title="Remove game">
           <i class="fas fa-trash-alt"></i>
         </button>
       </div>
-      <img src="${game.cover}" alt="${game.title}" class="game-cover" loading="lazy">
+      
+      <!-- Custom Cover Container with Frame Superposition -->
+      <div class="cover-wrapper ${boxClass}">
+        <img src="${game.cover}" alt="${game.title}" class="game-cover-art" loading="lazy">
+        <div class="cover-frame"></div>
+      </div>
+
       <div class="game-info">
         <h3 class="game-title">${game.title}</h3>
     
@@ -176,6 +190,83 @@ function renderGames(gamesList) {
         filterGames();
       }
     });
+  });
+}
+
+/**
+ * Render search result rows inside the modal with box selection
+ */
+function renderModalResults(results) {
+  const modalResultsContainer = document.getElementById("modal-search-results");
+  if (!modalResultsContainer) return;
+
+  modalResultsContainer.innerHTML = "";
+
+  results.forEach((game) => {
+    const isAlreadySaved = myCollection.some(
+      (g) => g.id.toString() === game.id.toString(),
+    );
+
+    const item = document.createElement("div");
+    item.classList.add("search-result-item");
+
+    item.innerHTML = `
+      <div class="search-result-info">
+        <img src="${game.cover}" alt="${game.title}" class="search-result-thumb">
+        <div class="search-result-details">
+          <h4>${game.title}</h4>
+          <p>${game.platforms.join(", ")}</p>
+        </div>
+      </div>
+      <div class="add-action-wrapper">
+        ${
+          isAlreadySaved
+            ? `<button class="btn-add-to-lib added" disabled><i class="fas fa-check"></i> Added</button>`
+            : `
+              <select class="box-select" data-id="${game.id}">
+                <option value="switch2">Switch 2</option>
+                <option value="ps5">PS5</option>
+              </select>
+              <button class="btn-add-to-lib" data-id="${game.id}">
+                <i class="fas fa-plus"></i> Add
+              </button>
+            `
+        }
+      </div>
+    `;
+
+    modalResultsContainer.appendChild(item);
+
+    // Event listener for Add Button
+    const addBtn = item.querySelector(".btn-add-to-lib");
+    const boxSelect = item.querySelector(".box-select");
+
+    if (addBtn && !isAlreadySaved) {
+      addBtn.addEventListener("click", () => {
+        const selectedBox = boxSelect ? boxSelect.value : "switch2";
+
+        const newGame = {
+          id: game.id,
+          title: game.title,
+          platforms: game.platforms,
+          genre: game.genre,
+          cover: game.cover,
+          selectedBox: selectedBox, // Save platform box choice
+          status: "pending",
+        };
+
+        myCollection.push(newGame);
+        saveCollection();
+
+        // Update button UI state
+        addBtn.classList.add("added");
+        addBtn.disabled = true;
+        addBtn.innerHTML = '<i class="fas fa-check"></i> Added';
+        if (boxSelect) boxSelect.style.display = "none";
+
+        filterGames();
+      });
+    }
   });
 }
 

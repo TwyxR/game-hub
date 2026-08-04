@@ -698,3 +698,76 @@ input:checked + .slider:before {
   font-size: 2rem;
   margin-bottom: 0.5rem;
 }
+
+/* ==========================================
+   GAME COVER TEMPLATES & BOX FRAMES
+   ========================================== */
+
+/* Main relative wrapper for physical box representation */
+.cover-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 0.63 / 1; /* Standard aspect ratio for game cases */
+  overflow: hidden;
+  background-color: transparent;
+  border-radius: 8px 8px 0 0;
+}
+
+/* Background image art from IGDB */
+.cover-wrapper .game-cover-art {
+  position: absolute;
+  object-fit: cover;
+  z-index: 1;
+}
+
+/* Overlay frame template */
+.cover-wrapper .cover-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Switch 2 Box Styling & Art positioning */
+.platform-switch2 .cover-frame {
+  background-image: url('../assets/covers/switch2-template.png');
+}
+.platform-switch2 .game-cover-art {
+  top: 10.5%;
+  left: 0%;
+  width: 96.4%;
+  height: 87.5%;
+}
+
+/* PS5 Box Styling & Art positioning */
+.platform-ps5 .cover-frame {
+  background-image: url('../assets/covers/ps5-template.png');
+}
+.platform-ps5 .game-cover-art {
+  top: 11%;
+  left: 1%;
+  width: 98%;
+  height: 88%;
+}
+
+/* Modal box selection dropdown styling */
+.add-action-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.box-select {
+  background-color: var(--bg-secondary, #1f293d);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
