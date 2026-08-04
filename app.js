@@ -2,9 +2,11 @@
    1. CONFIGURATION & GLOBAL STATE
    ========================================== */
 
-// API Configuration (Used inside the Search Modal)
-const API_KEY = "f97d3b0cfd9845a4ba7d4ec1765f6527";
-const API_URL = `https://api.rawg.io/api/games?key=${API_KEY}`;
+// IGDB API Configuration
+const IGDB_CLIENT_ID = "eu8omzwjqjyxutv2dub243scxlu9uj";
+const IGDB_ACCESS_TOKEN = "t1vyj21csj5w4purpvh9ecn8n8ofcj";
+const PROXY_URL = "https://corsproxy.io/?";
+const IGDB_API_URL = "https://api.igdb.com/v4/games";
 
 // LocalStorage Persistence Key
 const STORAGE_KEY = "my_game_collection";
@@ -31,9 +33,6 @@ const statusNames = {
    2. STORAGE HELPERS
    ========================================== */
 
-/**
- * Saves current personal collection array to localStorage
- */
 function saveCollection() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(myCollection));
 }
@@ -42,9 +41,6 @@ function saveCollection() {
    3. UI RENDERERS (Main Grid & Platform Icons)
    ========================================== */
 
-/**
- * Map list of platforms into FontAwesome family icons
- */
 function renderPlatformIcons(platformsList = []) {
   const iconSet = new Set();
 
@@ -80,9 +76,6 @@ function renderPlatformIcons(platformsList = []) {
   return Array.from(iconSet).join(" ");
 }
 
-/**
- * Render the game cards into the main grid container or display empty state
- */
 function renderGames(gamesList) {
   const container = document.getElementById("games-grid");
   const emptyState = document.getElementById("empty-state");
@@ -92,29 +85,24 @@ function renderGames(gamesList) {
 
   container.innerHTML = "";
 
-  // Update Game Counter Label
   if (gameCountLabel) {
     gameCountLabel.textContent = gamesList.length;
   }
 
-  // Handle Empty Library or Empty Filter Results
   if (!gamesList || gamesList.length === 0) {
     container.style.display = "none";
     if (emptyState) emptyState.classList.remove("hidden");
     return;
   }
 
-  // Hide empty state and show grid
   container.style.display = "grid";
   if (emptyState) emptyState.classList.add("hidden");
 
-  // Render each card in personal collection
   gamesList.forEach((game) => {
     const platformIconsHTML = renderPlatformIcons(game.platforms);
     const card = document.createElement("div");
     card.classList.add("game-card");
 
-    // Add golden border highlight if the game status is set to Mastered
     if (game.status === "mastered") {
       card.classList.add("mastered-card");
     }
@@ -150,14 +138,13 @@ function renderGames(gamesList) {
     container.appendChild(card);
   });
 
-  // Attach delete event listeners to each card
+  // Attach delete listeners
   container.querySelectorAll(".delete-game-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const gameTitle = e.currentTarget
         .closest(".game-card")
         .querySelector(".game-title").textContent;
 
-      // Ask for confirmation before deleting
       if (
         confirm(
           `Are you sure you want to remove "${gameTitle}" from your collection?`,
@@ -174,7 +161,7 @@ function renderGames(gamesList) {
     });
   });
 
-  // Attach status change listeners to saved games
+  // Attach status change listeners
   container.querySelectorAll(".status-select").forEach((select) => {
     select.addEventListener("change", (e) => {
       const gameId = e.target.getAttribute("data-id");
@@ -198,12 +185,10 @@ function renderGames(gamesList) {
 
 function filterGames() {
   const filtered = myCollection.filter((game) => {
-    // Search text filter
     const matchesSearch = game.title
       .toLowerCase()
       .includes(currentSearch.toLowerCase());
 
-    // Platform filter
     const matchesPlatform =
       currentPlatform === "all" ||
       (game.platforms &&
@@ -211,7 +196,6 @@ function filterGames() {
           p.toLowerCase().includes(currentPlatform.toLowerCase()),
         ));
 
-    // State filter
     const matchesStatus =
       currentStatus === "all" || game.status === currentStatus;
 
@@ -222,35 +206,41 @@ function filterGames() {
 }
 
 /* ==========================================
-   5. MODAL & RAWG SEARCH LOGIC
+   5. MODAL & IGDB SEARCH LOGIC
    ========================================== */
 
-// Helper function to close modal
 function closeModal() {
   const modalOverlay = document.getElementById("add-game-modal");
   if (modalOverlay) modalOverlay.classList.add("hidden");
 }
 
 /**
- * Search games directly from RAWG API
+ * Search games directly from IGDB API
  */
-async function searchRAWGGames(query) {
+async function searchIGDBGames(query) {
   const modalResultsContainer = document.getElementById("modal-search-results");
   if (!modalResultsContainer) return;
 
-  modalResultsContainer.innerHTML = `<p class="loading-state" style="text-align:center; padding: 2rem;">Searching games...</p>`;
+  modalResultsContainer.innerHTML = `<p class="loading-state" style="text-align:center; padding: 2rem;">Searching IGDB...</p>`;
 
   try {
-    const response = await fetch(
-      `${API_URL}&search=${encodeURIComponent(query)}&page_size=6`,
-    );
+    const bodyQuery = `search "${query}"; fields name, cover.url, platforms.name, genres.name; limit 6;`;
 
-    // Handle API Rate Limit (Too Many Requests - Error 429)
+    const response = await fetch(`${PROXY_URL}${IGDB_API_URL}`, {
+      method: "POST",
+      headers: {
+        "Client-ID": IGDB_CLIENT_ID,
+        Authorization: `Bearer ${IGDB_ACCESS_TOKEN}`,
+        "Content-Type": "text/plain",
+      },
+      body: bodyQuery,
+    });
+
     if (response.status === 429) {
       modalResultsContainer.innerHTML = `
         <div class="api-error-message">
           <i class="fas fa-exclamation-triangle"></i>
-          <p>API rate limit reached. Please wait a minute and try again.</p>
+          <p>Rate limit reached. Please wait a moment and try again.</p>
         </div>`;
       return;
     }
@@ -261,18 +251,35 @@ async function searchRAWGGames(query) {
 
     const data = await response.json();
 
-    if (!data.results || data.results.length === 0) {
-      modalResultsContainer.innerHTML = `<p style="text-align:center; padding: 2rem;">No games found on RAWG.</p>`;
+    if (!data || data.length === 0) {
+      modalResultsContainer.innerHTML = `<p style="text-align:center; padding: 2rem;">No games found on IGDB.</p>`;
       return;
     }
 
-    renderModalResults(data.results);
+    // Format results to standard application structure
+    const formattedResults = data.map((game) => {
+      let coverUrl = "https://via.placeholder.com/150x200?text=No+Cover";
+      if (game.cover && game.cover.url) {
+        coverUrl = `https:${game.cover.url.replace("t_thumb", "t_cover_big")}`;
+      }
+
+      return {
+        id: game.id.toString(),
+        title: game.name,
+        cover: coverUrl,
+        platforms: game.platforms ? game.platforms.map((p) => p.name) : ["PC"],
+        genre:
+          game.genres && game.genres.length > 0 ? game.genres[0].name : "Game",
+      };
+    });
+
+    renderModalResults(formattedResults);
   } catch (error) {
-    console.error("RAWG Search error:", error);
+    console.error("IGDB Search error:", error);
     modalResultsContainer.innerHTML = `
       <div class="api-error-message">
         <i class="fas fa-wifi"></i>
-        <p>Could not load games. Please check your connection or wait a minute.</p>
+        <p>Could not load games from IGDB. Check your connection or Token.</p>
       </div>`;
   }
 }
@@ -290,24 +297,16 @@ function renderModalResults(results) {
     const isAlreadySaved = myCollection.some(
       (g) => g.id.toString() === game.id.toString(),
     );
-    const platforms = game.platforms
-      ? game.platforms.map((p) => p.platform.name)
-      : ["PC"];
-    const coverUrl =
-      game.background_image ||
-      "https://via.placeholder.com/400x225?text=No+Cover";
-    const genre =
-      game.genres && game.genres.length > 0 ? game.genres[0].name : "Action";
 
     const item = document.createElement("div");
     item.classList.add("search-result-item");
 
     item.innerHTML = `
       <div class="search-result-info">
-        <img src="${coverUrl}" alt="${game.name}" class="search-result-thumb">
+        <img src="${game.cover}" alt="${game.title}" class="search-result-thumb">
         <div class="search-result-details">
-          <h4>${game.name}</h4>
-          <p>${platforms.join(", ")}</p>
+          <h4>${game.title}</h4>
+          <p>${game.platforms.join(", ")}</p>
         </div>
       </div>
       <button class="btn-add-to-lib ${isAlreadySaved ? "added" : ""}" data-id="${game.id}">
@@ -322,22 +321,20 @@ function renderModalResults(results) {
     if (addBtn && !isAlreadySaved) {
       addBtn.addEventListener("click", () => {
         const newGame = {
-          id: game.id.toString(),
-          title: game.name,
-          platforms: platforms,
-          genre: genre,
-          cover: coverUrl,
-          status: "pending", // Default status on add
+          id: game.id,
+          title: game.title,
+          platforms: game.platforms,
+          genre: game.genre,
+          cover: game.cover,
+          status: "pending",
         };
 
         myCollection.push(newGame);
         saveCollection();
 
-        // Update button UI state
         addBtn.classList.add("added");
         addBtn.innerHTML = '<i class="fas fa-check"></i> Added';
 
-        // Re-render main library grid behind modal
         filterGames();
       });
     }
@@ -349,7 +346,7 @@ function renderModalResults(results) {
    ========================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Initial Theme Switcher setup
+  // 1. Theme Switcher setup
   const themeToggleInput = document.getElementById("theme-toggle-input");
   const savedTheme = localStorage.getItem("theme");
 
@@ -370,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 2. Main Collection Live Search Bar Handler
+  // 2. Main Search Bar
   const searchInput = document.getElementById("search-input");
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
@@ -379,7 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 3. Sidebar Filter Buttons Handler (Platforms and Statuses)
+  // 3. Sidebar Filter Buttons
   const filterButtons = document.querySelectorAll(".filter-btn");
   filterButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -403,7 +400,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 4. Toggle 'See More' Platforms Dropdown Handler
+  // 4. Toggle Platforms
   const togglePlatformsBtn = document.getElementById("toggle-platforms-btn");
   const morePlatformsContainer = document.getElementById("more-platforms");
 
@@ -418,7 +415,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 5. Modal Event Handlers Setup (Open, Close & Live Search)
+  // 5. Modal Setup & Live Search
   const addGameBtn = document.getElementById("add-game-btn");
   const modalOverlay = document.getElementById("add-game-modal");
   const closeModalBtn = document.getElementById("close-modal-btn");
@@ -440,7 +437,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Live Search inside Modal handler
+  // Live Search
   let searchDebounceTimeout = null;
   if (modalSearchInput) {
     modalSearchInput.addEventListener("input", (e) => {
@@ -452,18 +449,18 @@ document.addEventListener("DOMContentLoaded", () => {
           modalResultsContainer.innerHTML = `
             <div class="modal-empty-hint">
               <i class="fas fa-gamepad"></i>
-              <p>Type a title above to search from RAWG database.</p>
+              <p>Type a title above to search from IGDB database.</p>
             </div>`;
         }
         return;
       }
 
       searchDebounceTimeout = setTimeout(() => {
-        searchRAWGGames(query);
-      }, 400);
+        searchIGDBGames(query);
+      }, 500);
     });
   }
 
-  // 6. Initial render of user's personal collection
+  // 6. Initial Render
   filterGames();
 });
