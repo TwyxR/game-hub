@@ -375,63 +375,6 @@ async function searchIGDBGames(query) {
   }
 }
 
-/**
- * Render search result rows inside the modal
- */
-function renderModalResults(results) {
-  const modalResultsContainer = document.getElementById("modal-search-results");
-  if (!modalResultsContainer) return;
-
-  modalResultsContainer.innerHTML = "";
-
-  results.forEach((game) => {
-    const isAlreadySaved = myCollection.some(
-      (g) => g.id.toString() === game.id.toString(),
-    );
-
-    const item = document.createElement("div");
-    item.classList.add("search-result-item");
-
-    item.innerHTML = `
-      <div class="search-result-info">
-        <img src="${game.cover}" alt="${game.title}" class="search-result-thumb">
-        <div class="search-result-details">
-          <h4>${game.title}</h4>
-          <p>${game.platforms.join(", ")}</p>
-        </div>
-      </div>
-      <button class="btn-add-to-lib ${isAlreadySaved ? "added" : ""}" data-id="${game.id}">
-        ${isAlreadySaved ? '<i class="fas fa-check"></i> Added' : '<i class="fas fa-plus"></i> Add'}
-      </button>
-    `;
-
-    modalResultsContainer.appendChild(item);
-
-    // Event listener for Add Button
-    const addBtn = item.querySelector(".btn-add-to-lib");
-    if (addBtn && !isAlreadySaved) {
-      addBtn.addEventListener("click", () => {
-        const newGame = {
-          id: game.id,
-          title: game.title,
-          platforms: game.platforms,
-          genre: game.genre,
-          cover: game.cover,
-          status: "pending",
-        };
-
-        myCollection.push(newGame);
-        saveCollection();
-
-        addBtn.classList.add("added");
-        addBtn.innerHTML = '<i class="fas fa-check"></i> Added';
-
-        filterGames();
-      });
-    }
-  });
-}
-
 /* ==========================================
    6. INITIALIZATION & EVENT LISTENERS
    ========================================== */

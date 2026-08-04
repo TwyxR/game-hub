@@ -18,7 +18,6 @@
   --text-main: #1a202c;
   --text-muted: #718096;
   --border-color: #e2e8f0;
-  /* Accent color remains the same for brand consistency */
 }
 
 /* ==========================================
@@ -38,7 +37,6 @@ body {
     sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-main);
-  /* Smooth transition when switching themes */
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
@@ -48,21 +46,18 @@ body {
    3. LAYOUT & GRID
    ========================================== */
 
-/* Main Two-Column Layout */
 .layout-container {
   display: grid;
   grid-template-columns: 240px 1fr;
   min-height: calc(100vh - 70px);
 }
 
-/* Sidebar Wrapper */
 .sidebar {
   background-color: var(--bg-secondary);
   padding: 1.5rem;
   border-right: 1px solid var(--border-color);
 }
 
-/* Main Content Wrapper */
 .content-area {
   padding: 2rem;
 }
@@ -85,7 +80,6 @@ body {
   color: var(--accent-color);
 }
 
-/* Search Bar */
 .search-bar input {
   width: 250px;
   padding: 0.5rem 1rem;
@@ -117,7 +111,6 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Filter Buttons */
 .filter-btn {
   display: block;
   width: 100%;
@@ -139,7 +132,6 @@ body {
   color: var(--accent-color);
 }
 
-/* Expandable Platforms Area */
 .extra-platforms {
   display: flex;
   flex-direction: column;
@@ -152,7 +144,6 @@ body {
   display: none;
 }
 
-/* Toggle 'See More' Button */
 .show-more-btn {
   display: flex;
   align-items: center;
@@ -197,11 +188,11 @@ body {
 .game-card {
   display: flex;
   flex-direction: column;
-  height: 100%;
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   overflow: hidden;
+  position: relative;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -213,11 +204,17 @@ body {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Card Image */
-.game-card img {
+/* Fallback Card Image */
+.game-card img.game-cover {
   width: 100%;
-  height: 280px;
+  aspect-ratio: 0.63 / 1;
   object-fit: cover;
+  border-radius: 8px 8px 0 0;
+  transition: transform 0.3s ease;
+}
+
+.game-card:hover .game-cover {
+  transform: scale(1.04);
 }
 
 /* Card Content Area */
@@ -235,7 +232,6 @@ body {
   line-height: 1.3;
 }
 
-/* Card Meta (Platforms & Genre) */
 .game-meta {
   display: flex;
   flex-direction: column;
@@ -267,7 +263,6 @@ body {
   opacity: 0.8;
 }
 
-/* Dynamic Text Badges for Unmapped Platforms */
 .platform-badge {
   display: inline-block;
   font-size: 0.7rem;
@@ -279,9 +274,8 @@ body {
   line-height: 1;
 }
 
-/* Status Selector Dropdown */
 .status-selector-wrapper {
-  margin-top: auto; /* Pushes selector to the bottom of the card */
+  margin-top: auto;
   width: 100%;
 }
 
@@ -296,8 +290,6 @@ body {
   font-size: 0.85rem;
   outline: none;
   box-sizing: border-box;
-
-  /* Custom Dropdown Arrow */
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -311,10 +303,33 @@ body {
   border-color: var(--accent-color);
 }
 
-/* Gold styling for Mastered games */
 .mastered-card {
   border-color: #fbbf24;
   box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
+}
+
+.delete-game-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(15, 23, 42, 0.75);
+  color: #ef4444;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.delete-game-btn:hover {
+  background-color: #ef4444;
+  color: #ffffff;
+  transform: scale(1.1);
 }
 
 /* ==========================================
@@ -376,7 +391,6 @@ body {
   font-size: 0.85rem;
 }
 
-/* Checked State Styles */
 input:checked + .slider {
   background-color: var(--accent-color);
 }
@@ -385,7 +399,6 @@ input:checked + .slider:before {
   transform: translateX(28px);
 }
 
-/* Add Game Button */
 .add-game-btn {
   display: flex;
   align-items: center;
@@ -412,7 +425,6 @@ input:checked + .slider:before {
   transform: translateY(0);
 }
 
-/* Empty State Styling */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -576,7 +588,6 @@ input:checked + .slider:before {
   opacity: 0.5;
 }
 
-/* Modal Search Items */
 .search-result-item {
   display: flex;
   align-items: center;
@@ -644,54 +655,10 @@ input:checked + .slider:before {
   vertical-align: middle;
 }
 
-/* Delete button on game cards */
-.game-card {
-  position: relative; /* Essential for absolute positioning of delete button */
-}
-
-.delete-game-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(15, 23, 42, 0.75);
-  color: #ef4444; /* Red color */
-  border: 1px solid var(--border-color);
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 2;
-}
-
-.delete-game-btn:hover {
-  background-color: #ef4444;
-  color: #ffffff;
-  transform: scale(1.1);
-}
-
-/* Smooth hover zoom for game covers */
-.game-card .game-cover {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  height: auto;
-  object-fit: cover;
-  border-radius: 8px 8px 0 0;
-  transition: transform 0.3s ease;
-}
-
-.game-card:hover .game-cover {
-  transform: scale(1.04);
-}
-
-/* API Error state inside modal */
 .api-error-message {
   text-align: center;
   padding: 2rem;
-  color: #f87171; /* Light red */
+  color: #f87171;
 }
 
 .api-error-message i {
@@ -700,42 +667,47 @@ input:checked + .slider:before {
 }
 
 /* ==========================================
-   GAME COVER TEMPLATES & BOX FRAMES
+   9. GAME COVER TEMPLATES & BOX FRAMES
    ========================================== */
 
-/* Main relative wrapper for physical box representation */
+/* Wrapper principal vertical de la carátula */
 .cover-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 0.63 / 1; /* Standard aspect ratio for game cases */
+  aspect-ratio: 0.63 / 1; /* Relación de aspecto estándar de carátula física */
   overflow: hidden;
-  background-color: transparent;
+  background-color: #000;
   border-radius: 8px 8px 0 0;
 }
 
-/* Background image art from IGDB */
+/* Imagen del juego (fondo) */
 .cover-wrapper .game-cover-art {
   position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  object-position: center;
   z-index: 1;
 }
 
-/* Overlay frame template */
+/* Capa de plantilla overlay (delante de la imagen) */
 .cover-wrapper .cover-frame {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-size: 100% 100%;
   background-repeat: no-repeat;
   pointer-events: none;
   z-index: 2;
 }
 
-/* Switch 2 Box Styling & Art positioning */
+/* Plantilla Switch 2 (Caja completa con bordes rojos) */
 .platform-switch2 .cover-frame {
   background-image: url('../assets/covers/switch2-template.png');
+  background-size: 100% 100%;
 }
 .platform-switch2 .game-cover-art {
   top: 10.5%;
@@ -744,18 +716,20 @@ input:checked + .slider:before {
   height: 87.5%;
 }
 
-/* PS5 Box Styling & Art positioning */
+/* Plantilla PS5 (Solo banner superior, imagen recortada para no tapar título) */
 .platform-ps5 .cover-frame {
   background-image: url('../assets/covers/ps5-template.png');
+  background-size: 100% auto;
+  background-position: top center;
 }
 .platform-ps5 .game-cover-art {
-  top: 11%;
-  left: 1%;
-  width: 98%;
-  height: 88%;
+  top: 11%; /* Empuja la imagen justo debajo del banner */
+  left: 0;
+  width: 100%;
+  height: 89%; /* Renajusta la altura para no salirse abajo */
 }
 
-/* Modal box selection dropdown styling */
+/* Estilos dropdown de selección en modal */
 .add-action-wrapper {
   display: flex;
   align-items: center;
