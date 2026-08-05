@@ -204,6 +204,13 @@ body {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
+/* Al pasar el ratón sobre la tarjeta, se muestra la papelera */
+.game-card:hover .delete-game-btn {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
 /* Fallback Card Image */
 .game-card img.game-cover {
   width: 100%;
@@ -308,11 +315,12 @@ body {
   box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
 }
 
+/* Estado base: Oculto e interactivo al hacer hover */
 .delete-game-btn {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: rgba(15, 23, 42, 0.75);
+  background-color: rgba(15, 23, 42, 0.85);
   color: #ef4444;
   border: 1px solid var(--border-color);
   border-radius: 50%;
@@ -322,14 +330,20 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
   z-index: 10;
+  
+  /* Transición suave y oculto por defecto */
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.8);
+  transition: all 0.2s ease;
 }
 
+/* Efecto al pasar el ratón directamente sobre la papelera */
 .delete-game-btn:hover {
   background-color: #ef4444;
   color: #ffffff;
-  transform: scale(1.1);
+  transform: scale(1.1) !important;
 }
 
 /* ==========================================
@@ -674,10 +688,11 @@ input:checked + .slider:before {
 .cover-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 0.63 / 1; /* Relación de aspecto estándar de carátula física */
+  aspect-ratio: 0.75 / 1;
   overflow: hidden;
   background-color: #000;
   border-radius: 8px 8px 0 0;
+  container-type: inline-size; /* Activa el contexto de Container Query */
 }
 
 /* Imagen del juego (fondo) */
@@ -687,7 +702,7 @@ input:checked + .slider:before {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain; /* Mantiene toda la carátula visible sin recortar los lados */
   object-position: center;
   z-index: 1;
 }
@@ -704,29 +719,99 @@ input:checked + .slider:before {
   z-index: 2;
 }
 
-/* Plantilla Switch 2 (Caja completa con bordes rojos) */
-.platform-switch2 .cover-frame {
-  background-image: url('../assets/covers/switch2-template.png');
+/* Plantilla Steam */
+.platform-steam .cover-frame {
+  background-image: url("../assets/covers/steam-template.png");
   background-size: 100% 100%;
 }
-.platform-switch2 .game-cover-art {
-  top: 10.5%;
-  left: 0%;
-  width: 96.4%;
-  height: 87.5%;
+.platform-steam .game-cover-art {
+  top: 12cqw;
+  left: 0;
+  width: 100%;
+  height: 122cqw;
+  object-fit: fill;
 }
 
-/* Plantilla PS5 (Solo banner superior, imagen recortada para no tapar título) */
+/* Plantilla PS5 */
 .platform-ps5 .cover-frame {
-  background-image: url('../assets/covers/ps5-template.png');
+  background-image: url("../assets/covers/ps5-template.png");
   background-size: 100% auto;
   background-position: top center;
 }
 .platform-ps5 .game-cover-art {
-  top: 11%; /* Empuja la imagen justo debajo del banner */
+  top: 14cqw;
   left: 0;
   width: 100%;
-  height: 89%; /* Renajusta la altura para no salirse abajo */
+  height: 90%;
+  object-fit: fill;
+}
+
+/* Plantilla PS4 */
+.platform-ps4 .cover-frame {
+  background-image: url("../assets/covers/ps4-template.png");
+  background-size: 100% auto;
+  background-position: top center;
+}
+.platform-ps4 .game-cover-art {
+  top: 14cqw;
+  left: 0;
+  width: 100%;
+  height: 90%;
+  object-fit: fill;
+}
+
+/* Plantilla Xbox One */
+.platform-xboxone .cover-frame {
+  background-image: url("../assets/covers/xboxone-template.png");
+  background-size: 100% auto;
+  background-position: top center;
+}
+.platform-xboxone .game-cover-art {
+  top: 12cqw;
+  left: 0;
+  width: 100%;
+  height: 91%;
+  object-fit: fill;
+}
+
+/* Plantilla Xbox Series X/S */
+.platform-xboxseries .cover-frame {
+  background-image: url("../assets/covers/xboxseries-template.png");
+  background-size: 100% auto;
+  background-position: top center;
+}
+.platform-xboxseries .game-cover-art {
+  top: 11cqw;
+  left: 0;
+  width: 100%;
+  height: 92%;
+  object-fit: fill;
+}
+
+/* Plantilla Nintendo Switch 1 */
+.platform-switch1 .cover-frame {
+  background-image: url("../assets/covers/switch1-template.png");
+  background-size: 100% 100%;
+}
+.platform-switch1 .game-cover-art {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Plantilla Switch 2 */
+.platform-switch2 .cover-frame {
+  background-image: url("../assets/covers/switch2-template.png");
+  background-size: 100% 100%;
+}
+.platform-switch2 .game-cover-art {
+  top: 16cqw;
+  left: 0;
+  width: 100%;
+  height: 88%;
+  object-fit: fill;
 }
 
 /* Estilos dropdown de selección en modal */

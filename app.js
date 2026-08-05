@@ -30,11 +30,37 @@ const statusNames = {
 };
 
 /* ==========================================
-   2. STORAGE HELPERS
+   2. STORAGE & PLATFORM HELPERS
    ========================================== */
 
 function saveCollection() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(myCollection));
+}
+
+/**
+ * Mapea las plataformas de IGDB a una plantilla por defecto si no se elige manualmente.
+ */
+function getPlatformCoverClass(platforms = []) {
+  if (!platforms || platforms.length === 0) return "steam";
+
+  const pString = platforms.join(" ").toLowerCase();
+
+  if (pString.includes("switch 2")) return "switch2";
+  if (pString.includes("switch") || pString.includes("nintendo"))
+    return "switch1";
+  if (pString.includes("playstation 5") || pString.includes("ps5"))
+    return "ps5";
+  if (pString.includes("playstation 4") || pString.includes("ps4"))
+    return "ps4";
+  if (
+    pString.includes("series x") ||
+    pString.includes("series s") ||
+    pString.includes("xbox series")
+  )
+    return "xboxseries";
+  if (pString.includes("xbox one")) return "xboxone";
+
+  return "steam";
 }
 
 /* ==========================================
@@ -56,8 +82,8 @@ function renderPlatformIcons(platformsList = []) {
       name.includes("wii")
     ) {
       iconSet.add('<i class="fas fa-gamepad" title="Nintendo"></i>');
-    } else if (name.includes("pc")) {
-      iconSet.add('<i class="fas fa-desktop" title="PC"></i>');
+    } else if (name.includes("pc") || name.includes("steam")) {
+      iconSet.add('<i class="fas fa-desktop" title="PC / Steam"></i>');
     } else if (
       name.includes("mac") ||
       name.includes("macos") ||
@@ -110,10 +136,9 @@ function renderGames(gamesList) {
       card.classList.add("mastered-card");
     }
 
-    // Determine cover box class (default to switch2 if not specified)
-    const boxClass = game.selectedBox
-      ? `platform-${game.selectedBox}`
-      : "platform-switch2";
+    // Determine cover box class (fallback to automated resolution)
+    const boxType = game.selectedBox || getPlatformCoverClass(game.platforms);
+    const boxClass = `platform-${boxType}`;
 
     card.innerHTML = `
       <div class="card-header-actions">
@@ -207,6 +232,9 @@ function renderModalResults(results) {
       (g) => g.id.toString() === game.id.toString(),
     );
 
+    // Detección inteligente por defecto para el selector
+    const defaultBox = getPlatformCoverClass(game.platforms);
+
     const item = document.createElement("div");
     item.classList.add("search-result-item");
 
@@ -224,8 +252,13 @@ function renderModalResults(results) {
             ? `<button class="btn-add-to-lib added" disabled><i class="fas fa-check"></i> Added</button>`
             : `
               <select class="box-select" data-id="${game.id}">
-                <option value="switch2">Switch 2</option>
-                <option value="ps5">PS5</option>
+                <option value="steam" ${defaultBox === "steam" ? "selected" : ""}>Steam / PC</option>
+                <option value="ps5" ${defaultBox === "ps5" ? "selected" : ""}>PS5</option>
+                <option value="ps4" ${defaultBox === "ps4" ? "selected" : ""}>PS4</option>
+                <option value="switch1" ${defaultBox === "switch1" ? "selected" : ""}>Switch</option>
+                <option value="switch2" ${defaultBox === "switch2" ? "selected" : ""}>Switch 2</option>
+                <option value="xboxseries" ${defaultBox === "xboxseries" ? "selected" : ""}>Xbox Series X|S</option>
+                <option value="xboxone" ${defaultBox === "xboxone" ? "selected" : ""}>Xbox One</option>
               </select>
               <button class="btn-add-to-lib" data-id="${game.id}">
                 <i class="fas fa-plus"></i> Add
@@ -243,7 +276,7 @@ function renderModalResults(results) {
 
     if (addBtn && !isAlreadySaved) {
       addBtn.addEventListener("click", () => {
-        const selectedBox = boxSelect ? boxSelect.value : "switch2";
+        const selectedBox = boxSelect ? boxSelect.value : defaultBox;
 
         const newGame = {
           id: game.id,
@@ -315,7 +348,7 @@ async function searchIGDBGames(query) {
   modalResultsContainer.innerHTML = `<p class="loading-state" style="text-align:center; padding: 2rem;">Searching IGDB...</p>`;
 
   try {
-    const bodyQuery = `search "${query}"; fields name, cover.url, platforms.name, genres.name; limit 6;`;
+    const bodyQuery = `search "${query}"; fields name, cover.url, platforms.name, genres.name; limit 10;`;
 
     const response = await fetch(`${PROXY_URL}${IGDB_API_URL}`, {
       method: "POST",
